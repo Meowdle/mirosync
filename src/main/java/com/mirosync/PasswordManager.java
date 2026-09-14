@@ -1,5 +1,6 @@
 package com.mirosync;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -42,12 +43,30 @@ public class PasswordManager {
         }
     }
     public void savePassword() {
+        /*
+         * A standard class is a place designed for storing and reading [key-value] pairs.
+         * [OUTPUT] -> simple text file
+         *
+         * The `final` keyword is used to prevent an object from undergoing sudden changes.
+         */
         final Properties properties = new Properties();
+        // It stores a key-value pair in memory; it hasn't been written to disk yet.
         properties.setProperty("key", "value");
         try {
+            /*
+             * It writes the information stored in memory to a file.
+             * properties.store(x,y) -> [x] Where to write (a stream to the file)
+             *                       -> [y] An optional comment at the top of the file
+             */
             properties.store(new FileOutputStream("config.properties"), null);
-        }
+
+        } // If an error occurs during the file creation process, it will be handled.
         catch (IOException e) {
+            /*
+             * TODO:
+             *  - Full handling of file creation errors
+             *  - If there is an error, try creating the file again
+             */
             throw new RuntimeException(e);
         }
     }
