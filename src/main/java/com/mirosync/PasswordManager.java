@@ -42,24 +42,27 @@ public class PasswordManager {
             throw new RuntimeException(e);
         }
     }
-    /*
-     * A standard class is a place designed for storing and reading [key-value] pairs.
-     * [OUTPUT] -> simple text file
-     *
-     * The `final` keyword is used to prevent an object from undergoing sudden changes.
-     */
-    private final Properties properties = new Properties();
 
-    public void savePassword() {
+    public void savePassword(String hashedPassword) {
+        /*
+         * A standard class is a place designed for storing and reading [key-value] pairs.
+         * [OUTPUT] -> simple text file
+         *
+         * The `final` keyword is used to prevent an object from undergoing sudden changes.
+         */
+        final Properties properties = new Properties();
         // It stores a key-value pair in memory; it hasn't been written to disk yet.
-        properties.setProperty("key", "value");
-        try {
+        properties.setProperty("hashed_password", hashedPassword);
+        try (
+                FileOutputStream fileOutputStream = new FileOutputStream
+                        ("config.properties")
+        ) {
             /*
              * It writes the information stored in memory to a file.
              * properties.store(x,y) -> [x] Where to write (a stream to the file)
              *                       -> [y] An optional comment at the top of the file
              */
-            properties.store(new FileOutputStream("config.properties"), null);
+            properties.store(fileOutputStream, null);
 
         } // If an error occurs during the file creation process, it will be handled.
         catch (IOException e) {
@@ -71,13 +74,15 @@ public class PasswordManager {
             throw new RuntimeException(e);
         }
     }
-    public void loadPassword() {
+    public String loadPassword() {
+        final Properties properties = new Properties();
         try (
                 FileInputStream fileInputStream = new FileInputStream
                         ("config.properties")
         ) {
             properties.load(fileInputStream);
-            String hash = properties.getProperty("hashed_password");
+
+            return properties.getProperty("hashed_password");
         }
         catch (IOException e) {
             throw new RuntimeException(e);
