@@ -41,4 +41,25 @@ public class FolderManager {
             throw new RuntimeException(e);
         }
     }
+
+    public void hideFolder() {
+        try {
+            new ProcessBuilder(
+                    "attrib", "+h", pathAddress
+            ).start();
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void showFolder() {
+        try {
+            new ProcessBuilder(
+                    "attrib", "-h", pathAddress
+            ).start();
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
