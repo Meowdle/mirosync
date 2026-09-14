@@ -1,8 +1,11 @@
 package com.mirosync;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Properties;
 
 public class PasswordManager {
 
@@ -22,7 +25,7 @@ public class PasswordManager {
              * all at once. A loop is required to iterate through each element of
              * the array and convert it from a byte to a string.
              */
-            for (byte singleByte  : hashBytes) {
+            for (byte singleByte : hashBytes) {
                 /*
                  * We convert the bytes into a string using the String object and the format method.
                  * %02x -> [x]  Converts the numbers into hashes.
@@ -35,6 +38,16 @@ public class PasswordManager {
 
         } // For error handling in case the intended algorithm does not exist.
         catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void savePassword() {
+        final Properties properties = new Properties();
+        properties.setProperty("key", "value");
+        try {
+            properties.store(new FileOutputStream("config.properties"), null);
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
