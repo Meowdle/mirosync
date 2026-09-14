@@ -45,21 +45,23 @@ public class FolderManager {
 
     public void hideFolder() {
         try {
-            new ProcessBuilder(
+            Process process = new ProcessBuilder(
                     "attrib", "+h", pathAddress
             ).start();
+            process.waitFor();
         }
-        catch (IOException e) {
+        catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
     }
     public void showFolder() {
         try {
-            new ProcessBuilder(
+            Process process = new ProcessBuilder(
                     "attrib", "-h", pathAddress
             ).start();
+            process.waitFor();
         }
-        catch (IOException e) {
+        catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
     }
