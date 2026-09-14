@@ -9,7 +9,10 @@ import java.nio.file.Paths;
 public class FolderManager {
     // Default folder storage path
     private static final String DEFAULT_PATH =
-            System.getProperty("user.home") + "/MirosyncLocker";
+            Path.of(
+                    System.getProperty("user.home"),
+                    "Mirosync"
+            ).toString();
     private final String pathAddress;
 
     // Constructor for managing the selected file-saving path
@@ -45,21 +48,24 @@ public class FolderManager {
 
     public void hideFolder() {
         try {
-            new ProcessBuilder(
+            Process process = new ProcessBuilder(
                     "attrib", "+h", pathAddress
             ).start();
+            process.waitFor();
         }
-        catch (IOException e) {
+        catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
     }
     public void showFolder() {
         try {
-            new ProcessBuilder(
+            Process process = new ProcessBuilder(
                     "attrib", "-h", pathAddress
-            ).start();
+            ).inheritIO().start();
+            int exitCode = process.waitFor();
+            System.out.println("attrib exit code: " + exitCode);
         }
-        catch (IOException e) {
+        catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
     }
