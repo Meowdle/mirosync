@@ -20,20 +20,8 @@ public class PasswordManager {
                     password.getBytes(StandardCharsets.UTF_8) // Convert based on UTF-8.
             );
             // StringBuilder is used to facilitate string formatting.
-            StringBuilder stringBuilder = new StringBuilder();
-            /*
-             * The entire expression cannot be converted from bytes to a text string
-             * all at once. A loop is required to iterate through each element of
-             * the array and convert it from a byte to a string.
-             */
-            for (byte singleByte : hashBytes) {
-                /*
-                 * We convert the bytes into a string using the String object and the format method.
-                 * %02x -> [x]  Converts the numbers into hashes.
-                 *      -> [02] If the number is a single digit, it places a zero next to it.
-                 */
-                stringBuilder.append(String.format("%02x", singleByte));
-            }
+            StringBuilder stringBuilder = getStringBuilder(hashBytes);
+
             // Strings are called within the class.
             return stringBuilder.toString();
 
@@ -41,6 +29,24 @@ public class PasswordManager {
         catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static StringBuilder getStringBuilder(byte[] hashBytes) {
+        StringBuilder stringBuilder = new StringBuilder();
+        /*
+         * The entire expression cannot be converted from bytes to a text string
+         * all at once. A loop is required to iterate through each element of
+         * the array and convert it from a byte to a string.
+         */
+        for (byte singleByte : hashBytes) {
+            /*
+             * We convert the bytes into a string using the String object and the format method.
+             * %02x -> [x]  Converts the numbers into hashes.
+             *      -> [02] If the number is a single digit, it places a zero next to it.
+             */
+            stringBuilder.append(String.format("%02x", singleByte));
+        }
+        return stringBuilder;
     }
 
     public void savePassword(String hashedPassword) {
@@ -74,6 +80,7 @@ public class PasswordManager {
             throw new RuntimeException(e);
         }
     }
+
     public String loadPassword() {
         final Properties properties = new Properties();
         /*
