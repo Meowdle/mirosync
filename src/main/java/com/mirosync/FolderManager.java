@@ -9,11 +9,19 @@ import java.nio.file.Paths;
 public class FolderManager {
     // Default folder storage path
     private static final String DEFAULT_PATH = "C:/Users/Mirosync";
+    private final String pathAddress;
 
-    public void createFolder(String pathAddress) {
-        // If a preferred address is not provided, use the default.
-        if (pathAddress == null || pathAddress.isEmpty())
-            pathAddress = DEFAULT_PATH;
+    // Constructor for managing the selected file-saving path
+    public FolderManager(String pathAddress) {
+        // If a preferred address is not provided, use the default
+        if (pathAddress == null || pathAddress.isEmpty()) {
+            this.pathAddress = DEFAULT_PATH;
+            return;
+        }
+        this.pathAddress = pathAddress;
+    }
+
+    public void createFolder() {
         // Path for creating a folder
         Path path = Paths.get(pathAddress);
         try {
