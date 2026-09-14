@@ -25,12 +25,17 @@ public class FolderManager {
         // Path for creating a folder
         Path path = Paths.get(pathAddress);
         try {
+
+            // Handling duplicate addresses during file creation
             if (Files.exists(path))
-                throw new FileAlreadyExistsException(
-                        "File with this name already exist."
-                );
+                throw new FileAlreadyExistsException("error");
+
             Files.createDirectory(path);
-        } // Error while creating folder
+        }
+        // Errors while creating folder
+        catch (FileAlreadyExistsException e) {
+            System.err.println("Folder already exists.");
+        }
         catch (IOException e) {
             // TODO : Improved error handling during retries
             throw new RuntimeException(e);
