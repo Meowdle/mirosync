@@ -42,14 +42,15 @@ public class PasswordManager {
             throw new RuntimeException(e);
         }
     }
+    /*
+     * A standard class is a place designed for storing and reading [key-value] pairs.
+     * [OUTPUT] -> simple text file
+     *
+     * The `final` keyword is used to prevent an object from undergoing sudden changes.
+     */
+    private final Properties properties = new Properties();
+
     public void savePassword() {
-        /*
-         * A standard class is a place designed for storing and reading [key-value] pairs.
-         * [OUTPUT] -> simple text file
-         *
-         * The `final` keyword is used to prevent an object from undergoing sudden changes.
-         */
-        final Properties properties = new Properties();
         // It stores a key-value pair in memory; it hasn't been written to disk yet.
         properties.setProperty("key", "value");
         try {
@@ -67,6 +68,18 @@ public class PasswordManager {
              *  - Full handling of file creation errors
              *  - If there is an error, try creating the file again
              */
+            throw new RuntimeException(e);
+        }
+    }
+    public void loadPassword() {
+        try (
+                FileInputStream fileInputStream = new FileInputStream
+                        ("config.properties")
+        ) {
+            properties.load(fileInputStream);
+            String hash = properties.getProperty("hashed_password");
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
