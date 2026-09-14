@@ -76,14 +76,21 @@ public class PasswordManager {
     }
     public String loadPassword() {
         final Properties properties = new Properties();
+        /*
+         * With try-with-resource, the streams are automatically closed
+         * once the task is complete.
+         */
         try (
                 FileInputStream fileInputStream = new FileInputStream
                         ("config.properties")
         ) {
+            // It reads the file and loads it into memory.
             properties.load(fileInputStream);
 
+            // After loading, it returns the value of a key.
             return properties.getProperty("hashed_password");
-        }
+
+        } // To handle file errors
         catch (IOException e) {
             throw new RuntimeException(e);
         }
