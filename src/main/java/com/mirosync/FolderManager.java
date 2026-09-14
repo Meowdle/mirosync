@@ -1,5 +1,6 @@
 package com.mirosync;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -68,5 +69,10 @@ public class FolderManager {
         catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    // It checks whether the folder has been created at the specified path
+    public boolean exists() {
+        return Files.exists(Path.of(DEFAULT_PATH));
     }
 }

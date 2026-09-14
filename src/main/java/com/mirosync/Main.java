@@ -16,7 +16,7 @@ public class Main {
 
         System.out.println("Welcome page");
 
-        if (!config.exists()) {
+        if (!config.exists() || folderManager.exists()) {
 
             System.out.println("Set a password");
 
