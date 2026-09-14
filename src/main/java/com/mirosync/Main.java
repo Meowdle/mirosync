@@ -32,19 +32,25 @@ public class Main {
             folderManager.hideFolder();
         }
         else {
-            String password = scanner.next();
-            if (Objects.equals(
-                    passwordManager.hashPassword(password),
-                    passwordManager.loadPassword())
-            ) {
-                System.err.println("Folder is unlocked");
-                folderManager.showFolder();
-
-                System.out.println("Press [Enter] to lock folder...");
-                scanner.next(); folderManager.hideFolder();
-                System.err.println("Folder is locked");
+            int retryCount = 3;
+            while (retryCount != 0) {
+                retryCount = retryCount - 1;
+                String password = scanner.next();
+                if (Objects.equals(
+                        passwordManager.hashPassword(password),
+                        passwordManager.loadPassword())
+                ) {
+                    System.err.println("Folder is unlocked");
+                    folderManager.showFolder();
+                    System.out.println("Press any key to lock folder...");
+                    scanner.next();
+                    System.err.println("Folder is locked");
+                    folderManager.hideFolder();
+                    return;
+                }
+                System.out.println("try left : " + retryCount);
+                System.err.println("Wrong password. Try again.");
             }
-            else System.err.println("Wrong password.");
         }
     }
 }
