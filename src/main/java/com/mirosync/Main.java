@@ -7,10 +7,13 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class Main {
+    private static File config;
+    private static PasswordManager passwordManager;
+    private static FolderManager folderManager;
     public static void main(String[] args) {
-        File config = new File("config.properties");
-        PasswordManager passwordManager = new PasswordManager();
-        FolderManager folderManager = new FolderManager(null);
+        config = new File("config.properties");
+        passwordManager = new PasswordManager();
+        folderManager = new FolderManager(null);
 
         Scanner scanner = new Scanner(System.in);
 
@@ -36,10 +39,7 @@ public class Main {
             while (retryCount != 0) {
                 retryCount = retryCount - 1;
                 String password = scanner.next();
-                if (Objects.equals(
-                        passwordManager.hashPassword(password),
-                        passwordManager.loadPassword())
-                ) {
+                if (passwordManager.passwordValidator(password)) {
                     System.err.println("Folder is unlocked");
                     folderManager.showFolder();
                     System.out.println("Press any key to lock folder...");
