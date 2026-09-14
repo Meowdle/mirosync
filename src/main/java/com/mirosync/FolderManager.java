@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 public class FolderManager {
     // Default folder storage path
     private static final String DEFAULT_PATH =
-            System.getProperty("user.home") + "/Mirosync";
+            System.getProperty("user.home") + "/MirosyncLocker";
     private final String pathAddress;
 
     // Constructor for managing the selected file-saving path
