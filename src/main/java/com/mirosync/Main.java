@@ -4,6 +4,7 @@ import java.io.Console;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
@@ -11,30 +12,37 @@ public class Main {
         PasswordManager passwordManager = new PasswordManager();
         FolderManager folderManager = new FolderManager(null);
 
-        // It is better than the 'Scanner', because it keeps the passwords hidden.
-        Console console = System.console();
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Welcome page");
 
         if (!config.exists()) {
 
-            char[] password = console.readPassword();
-            String passwordString = new String(password);
+            System.out.println("Set a password");
+
+            String password = scanner.next();
+            if (password == null) {
+                System.err.println("Please use a terminal");
+                return;
+            }
             passwordManager.savePassword(
-                    passwordManager.hashPassword(passwordString)
+                    passwordManager.hashPassword(password)
             );
             folderManager.createFolder();
             folderManager.hideFolder();
         }
         else {
-            char[] password = console.readPassword();
-            String passwordString = new String(password);
+            String password = scanner.next();
             if (Objects.equals(
-                    passwordManager.hashPassword(passwordString),
+                    passwordManager.hashPassword(password),
                     passwordManager.loadPassword())
             ) {
+                System.err.println("Folder is unlocked");
                 folderManager.showFolder();
 
                 System.out.println("Press [Enter] to lock folder...");
-                console.readLine(); folderManager.hideFolder();
+                scanner.next(); folderManager.hideFolder();
+                System.err.println("Folder is locked");
             }
             else System.err.println("Wrong password.");
         }
