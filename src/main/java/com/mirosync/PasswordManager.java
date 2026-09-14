@@ -8,16 +8,33 @@ public class PasswordManager {
 
     public String hashPassword(String password) {
         try {
+            // The required algorithm is called.
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+            // Each individual character is converted into a byte,
+            // and they are arranged side-by-side in a byte array.
             byte[] hashBytes = messageDigest.digest(
-                    password.getBytes(StandardCharsets.UTF_8)
+                    password.getBytes(StandardCharsets.UTF_8) // Convert based on UTF-8.
             );
+            // StringBuilder is used to facilitate string formatting.
             StringBuilder stringBuilder = new StringBuilder();
-            for (byte bytes : hashBytes) {
-                stringBuilder.append(String.format("%02x", bytes));
+            /*
+             * The entire expression cannot be converted from bytes to a text string
+             * all at once. A loop is required to iterate through each element of
+             * the array and convert it from a byte to a string.
+             */
+            for (byte singleByte  : hashBytes) {
+                /*
+                 * We convert the bytes into a string using the String object and the format method.
+                 * %02x -> [x]  Converts the numbers into hashes.
+                 *      -> [02] If the number is a single digit, it places a zero next to it.
+                 */
+                stringBuilder.append(String.format("%02x", singleByte));
             }
+            // Strings are called within the class.
             return stringBuilder.toString();
-        } catch (NoSuchAlgorithmException e) {
+
+        } // For error handling in case the intended algorithm does not exist.
+        catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
