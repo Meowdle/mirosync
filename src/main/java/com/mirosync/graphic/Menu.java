@@ -51,8 +51,8 @@ public class Menu {
     }
 
     public int defaultMenu(boolean isFolderOpen) {
+        defaultMenuContext(isFolderOpen);
         while (true) {
-            defaultMenuContext(isFolderOpen);
             input = getInput();
             switch (input) {
                 case 1, 2 -> {
