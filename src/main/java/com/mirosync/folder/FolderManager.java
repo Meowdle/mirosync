@@ -1,6 +1,5 @@
-package com.mirosync;
+package com.mirosync.folder;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
