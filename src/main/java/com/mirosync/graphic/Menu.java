@@ -81,6 +81,10 @@ public class Menu {
 
     public String afterOpeningFolderMenu() {
         System.out.println(ProgramMessages.TYPE_L_LOCK_FOLDER);
-        return scanner.next().toLowerCase();
+        while (true) {
+            String answer = scanner.next().toLowerCase();
+            if (answer.equals("l"))
+                return answer;
+        }
     }
 }

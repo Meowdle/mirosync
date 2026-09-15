@@ -35,19 +35,11 @@ public class Mirosync {
     }
 
     public void firstBootMenuPathHandler() {
-        while (true) {
-            switch (menu.firstBootMenuPath()) {
-                case 1 -> {
-                    createFolderWithOriginalPath();
-                    return;
-                }
-                case 2 -> {
-                    createFolderWithCostumePath(
-                            menu.firstBootMenuCustomPath()
-                    );
-                    return;
-                }
-            }
+        switch (menu.firstBootMenuPath()) {
+            case 1 -> createFolderWithOriginalPath();
+            case 2 -> createFolderWithCostumePath(
+                    menu.firstBootMenuCustomPath()
+            );
         }
     }
 
@@ -61,15 +53,17 @@ public class Mirosync {
                 case 1 -> {
                     if (Objects.equals(
                                     passwordManager.loadPassword(),
-                                    menu.enterPasswordMenu()
+                                    passwordManager.hashPassword(
+                                            menu.enterPasswordMenu()
+                                    )
                     )) {
                         unlock();
-                        while (true) {
-                            if (menu.afterOpeningFolderMenu().equals("l")) {
-                                lock();
-                                return;
-                            }
+
+                        if (menu.afterOpeningFolderMenu().equals("l")) {
+                            lock();
+                            return;
                         }
+
                     }
                     return;
                 }
@@ -84,6 +78,7 @@ public class Mirosync {
     // Core Builder
     private void instructionsInitializer() {
         passwordManager = new PasswordManager();
+        folderManager = new FolderManager(null);
         validation = new Validation(passwordManager, folderManager);
         menu = new Menu();
     }
@@ -94,12 +89,14 @@ public class Mirosync {
 
     // Start Menu – Option to create a folder with the root path
     public void createFolderWithOriginalPath() {
-        folderManager = new FolderManager(null);
+        folderManager.createFolder();
+        folderManager.hideFolder();
     }
 
     // Start Menu – Option to create a folder at a selected location
     public void createFolderWithCostumePath(String path) {
         folderManager = new FolderManager(path);
+        validation = new Validation(passwordManager, folderManager);
     }
 
     // It manages the password; it first encrypts it and then saves it.
