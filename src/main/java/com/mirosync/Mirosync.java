@@ -54,11 +54,7 @@ public class Mirosync {
     private void instructionsInitializer() {
         passwordManager = new PasswordManager();
         validation = new Validation(passwordManager, folderManager);
-        menu = new Menu(
-                folderManager,
-                passwordManager,
-                validation
-        );
+        menu = new Menu();
     }
     // It checks whether the software is being run for the first time
     private boolean isFirstRun() {
