@@ -10,4 +10,7 @@ public final class ProgramMessages {
     public static final String PRESS_KEY = "Press any key to lock folder...";
     public static final String WRONG_PASSWORD = "Wrong password. Try again.";
     public static final String USE_TERMINAL = "Please use a terminal";
+    public static String triesLeft(int count) {
+        return "Tries left: " + count;
+    }
 }

@@ -47,7 +47,7 @@ public class Mirosync {
                     lock();
                     return;
                 }
-                System.out.println("try left : " + retryCount);
+                System.out.println(ProgramMessages.triesLeft(retryCount));
                 System.err.println(ProgramMessages.WRONG_PASSWORD);
             }
         }
