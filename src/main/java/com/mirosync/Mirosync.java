@@ -9,17 +9,41 @@ import java.io.File;
 import java.util.Scanner;
 
 public class Mirosync {
+
     private final String path;
     public Mirosync(String path) {
         this.path = path;
     }
+
     private FolderManager folderManager;
     private PasswordManager passwordManager;
+    private Validation validation;
+
     public void start() {
         instructionsInitializer();
         System.out.println(ProgramMessages.WELCOME);
 
         Scanner scanner = new Scanner(System.in);
+
+        if (validation.isVaultOpen()) {
+            System.out.println(ProgramMessages.VAULT_STILL_OPEN);
+
+            while (true) {
+                String answer = scanner.next().toLowerCase();
+                switch (answer) {
+                    case "y", "yes" -> {
+                        lock();
+                        return;
+                    }
+                    case "n", "no" -> {
+                        return;
+                    }
+                    default -> {
+                        System.err.println(ProgramMessages.UNDEFINE_BEHAVIOR);
+                    }
+                }
+            }
+        }
         if (isFirstRun()) {
             System.out.println(ProgramMessages.FIRST_RUN);
 
@@ -34,7 +58,6 @@ public class Mirosync {
         }
         else {
             int retryCount = 3;
-            Validation validation = new Validation(passwordManager);
             while (retryCount != 0) {
                 retryCount--;
                 String password = scanner.next();
@@ -55,6 +78,7 @@ public class Mirosync {
     private void instructionsInitializer() {
         folderManager = new FolderManager(path);
         passwordManager = new PasswordManager();
+        validation = new Validation(passwordManager, folderManager);
     }
     private boolean isFirstRun() {
         return !new File("config.properties").exists();
