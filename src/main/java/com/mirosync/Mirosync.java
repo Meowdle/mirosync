@@ -1,5 +1,6 @@
 package com.mirosync;
 
+import com.mirosync.R.ProgramMessages;
 import com.mirosync.folder.FolderManager;
 import com.mirosync.password.PasswordManager;
 import com.mirosync.validate.Validation;
@@ -16,15 +17,15 @@ public class Mirosync {
     private PasswordManager passwordManager;
     public void start() {
         instructionsInitializer();
-        System.out.println("..:: Mirosync Protector ::..");
+        System.out.println(ProgramMessages.WELCOME);
 
         Scanner scanner = new Scanner(System.in);
         if (isFirstRun()) {
-            System.out.println("First boost detected. Please choose a password : ");
+            System.out.println(ProgramMessages.FIRST_RUN);
 
             String password = scanner.next();
             if (password == null) {
-                System.err.println("Please use a terminal");
+                System.err.println(ProgramMessages.USE_TERMINAL);
                 return;
             }
             handleInput(password);
@@ -38,16 +39,16 @@ public class Mirosync {
                 retryCount--;
                 String password = scanner.next();
                 if (validation.passwordValidator(password)) {
-                    System.out.println("Folder is unlocked");
+                    System.out.println(ProgramMessages.UNLOCKED);
                     unlock();
-                    System.out.println("Press any key to lock folder...");
+                    System.out.println(ProgramMessages.PRESS_KEY);
                     scanner.next();
-                    System.out.println("Folder is locked");
+                    System.out.println(ProgramMessages.LOCKED);
                     lock();
                     return;
                 }
                 System.out.println("try left : " + retryCount);
-                System.err.println("Wrong password. Try again.");
+                System.err.println(ProgramMessages.WRONG_PASSWORD);
             }
         }
     }
