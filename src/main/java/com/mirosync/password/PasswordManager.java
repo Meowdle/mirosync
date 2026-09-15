@@ -103,10 +103,4 @@ public class PasswordManager {
             throw new RuntimeException(e);
         }
     }
-    public boolean passwordValidator(String password) {
-        return Objects.equals(
-                hashPassword(password),
-                loadPassword()
-        );
-    }
 }
