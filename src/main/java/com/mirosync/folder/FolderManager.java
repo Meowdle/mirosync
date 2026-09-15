@@ -62,10 +62,8 @@ public class FolderManager {
             Process process = new ProcessBuilder(
                     "attrib", "-h", pathAddress
             ).inheritIO().start();
-            int exitCode = process.waitFor();
-            System.out.println("attrib exit code: " + exitCode);
         }
-        catch (InterruptedException | IOException e) {
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

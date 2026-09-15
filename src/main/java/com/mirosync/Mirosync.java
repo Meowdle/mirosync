@@ -51,6 +51,7 @@ public class Mirosync {
                     )
             ) {
                 case 1 -> {
+                    clearTerminal();
                     if (!validation.isVaultOpen()) {
                         if (Objects.equals(
                                 passwordManager.loadPassword(),

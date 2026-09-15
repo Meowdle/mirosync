@@ -17,12 +17,17 @@ public class Menu {
                 case 1, 2 -> {
                     return input;
                 }
-                default -> System.err.println(ProgramMessages.UNDEFINE_BEHAVIOR);
+                default -> {
+                    System.err.println(ProgramMessages.UNDEFINE_BEHAVIOR);
+                    System.out.print(ProgramMessages.TERMINAL_DOODLE);
+                }
             }
         }
     }
     public String firstBootMenuCustomPath() {
         System.out.print(ProgramMessages.FIRST_RUN_CHOOSE_PATH);
+        System.out.println("\n");
+        System.out.print(ProgramMessages.TERMINAL_DOODLE);
         return scanner.next();
     }
     private void firstBootMenuContextPath() {
@@ -38,6 +43,8 @@ public class Menu {
 
     public String firstBootMenuPassword() {
         firstBootMenuContextPassword();
+        System.out.println("\n");
+        System.out.print(ProgramMessages.TERMINAL_DOODLE);
         return scanner.next();
     }
     private void firstBootMenuContextPassword() {
@@ -58,7 +65,10 @@ public class Menu {
                 case 1, 2 -> {
                     return input;
                 }
-                default -> System.err.println(ProgramMessages.UNDEFINE_BEHAVIOR);
+                default -> {
+                    System.err.println(ProgramMessages.UNDEFINE_BEHAVIOR);
+                    System.out.print(ProgramMessages.TERMINAL_DOODLE);
+                }
             }
         }
     }
@@ -84,13 +94,18 @@ public class Menu {
     }
 
     public String enterPasswordMenu() {
+        System.out.println(ProgramMessages.TITLE);
+        System.out.println("\n");
         System.out.println(ProgramMessages.ENTER_PASSWORD);
+        System.out.print(ProgramMessages.TERMINAL_DOODLE);
         return scanner.next();
     }
 
     public String afterOpeningFolderMenu() {
         System.out.println(ProgramMessages.TYPE_L_LOCK_FOLDER);
         while (true) {
+            System.out.println("\n");
+            System.out.print(ProgramMessages.TERMINAL_DOODLE);
             String answer = scanner.next().toLowerCase();
             if (answer.equals("l"))
                 return answer;
