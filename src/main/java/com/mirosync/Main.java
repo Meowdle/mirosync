@@ -1,9 +1,9 @@
 package com.mirosync;
 
-import java.io.Console;
+import com.mirosync.folder.FolderManager;
+import com.mirosync.password.PasswordManager;
+
 import java.io.File;
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class Main {
