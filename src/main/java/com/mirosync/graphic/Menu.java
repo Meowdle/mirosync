@@ -1,52 +1,23 @@
 package com.mirosync.graphic;
 
-import com.mirosync.Mirosync;
 import com.mirosync.R.ProgramMessages;
-import com.mirosync.folder.FolderManager;
-import com.mirosync.password.PasswordManager;
-import com.mirosync.validate.Validation;
 
 import java.util.Scanner;
 
 public class Menu {
-    private final Scanner scanner = new Scanner(System.in);
-    private final Mirosync mirosync = new Mirosync();
 
-    private FolderManager folderManager;
-    private PasswordManager passwordManager;
-    private Validation validation;
+    private final Scanner scanner = new Scanner(System.in);
     private int input;
 
-    public Menu(
-            FolderManager folderManager,
-            PasswordManager passwordManager,
-            Validation validation
-    ) {
-        this.folderManager = folderManager;
-        this.passwordManager = passwordManager;
-        this.validation = validation;
-    }
-
-    public void firstBootMenuPath() {
-        mirosync.clearTerminal();
+    public int firstBootMenuPath() {
         while (true) {
             firstBootMenuContextPath();
             input = scanner.nextInt();
             switch (input) {
-                // Create vault in default location
-                case 1 -> {
-                    mirosync.createFolderWithOriginalPath();
-                    return;
+                case 1, 2 -> {
+                    return input;
                 }
-                // Choose custom path
-                case 2 -> {
-                    String path = scanner.nextLine();
-                    mirosync.createFolderWithCostumePath(path);
-                    return;
-                }
-                default -> {
-                    System.err.println(ProgramMessages.UNDEFINE_BEHAVIOR);
-                }
+                default -> System.err.println(ProgramMessages.UNDEFINE_BEHAVIOR);
             }
         }
     }
@@ -61,11 +32,9 @@ public class Menu {
         System.out.print(ProgramMessages.TERMINAL_DOODLE);
     }
 
-    public void firstBootMenuPassword() {
-        mirosync.clearTerminal();
+    public String firstBootMenuPassword() {
         firstBootMenuContextPassword();
-        String password = scanner.next();
-        mirosync.handlePassword(password);
+        return scanner.next();
     }
     private void firstBootMenuContextPassword() {
         System.out.println(ProgramMessages.TITLE);
@@ -77,63 +46,42 @@ public class Menu {
         System.out.print(ProgramMessages.TERMINAL_DOODLE);
     }
 
-    public void defaultMenu() {
+    public int defaultMenu(boolean isFolderOpen) {
         while (true) {
-            defaultMenuContext();
+            defaultMenuContext(isFolderOpen);
             input = scanner.nextInt();
             switch (input) {
-                case 1 -> {
-                    if (!validation.isVaultOpen()) folderManager.showFolder();
-                    else folderManager.hideFolder();
-                    return;
-                }
-                case 2 -> {
-                    // TODO [Terminal Command]
-                    return;
+                case 1, 2 -> {
+                    return input;
                 }
                 default -> System.err.println(ProgramMessages.UNDEFINE_BEHAVIOR);
             }
         }
     }
-    private void defaultMenuContext() {
-        System.out.println(ProgramMessages.TITLE);                  // ..:: Mirosync ::..
-        System.out.println("\n");                                   //
-        System.out.println(ProgramMessages.DEFAULT_MENU_TITLE);     // >_ Choose what action you wanna do :
-        System.out.println("\n");                                   //
-
-        if (!validation.isVaultOpen())
-            System.out.println(ProgramMessages.UNLOCK_THE_FOLDER_OPTION);
-        else
-            System.out.println(ProgramMessages.LOCK_THE_FOLDER_OPTION);
-
+    private void defaultMenuContext(boolean isFolderOpen) {
+        System.out.println(ProgramMessages.TITLE);
+        System.out.println("\n");
+        System.out.println(ProgramMessages.DEFAULT_MENU_TITLE);
+        System.out.println("\n");
+        System.out.println(isFolderOpen
+                ? ProgramMessages.UNLOCK_THE_FOLDER_OPTION
+                : ProgramMessages.LOCK_THE_FOLDER_OPTION);
         System.out.println("\n");
         System.out.print(ProgramMessages.TERMINAL_DOODLE);
     }
 
-    public void folderStillVisibleMenu() {
+    public int folderStillVisibleMenu() {
         while (true) {
             folderStillVisibleMenuTitles();
             input = scanner.nextInt();
             switch (input) {
-                // Create vault in default location
-                case 1 -> {
-                    // TODO
-                    return;
+                case 1, 2-> {
+                    return input;
                 }
-                // Choose custom path
-
-                case 2 -> {
-                    // TODO SOME
-                    return;
-                }
-                default -> {
-                    System.err.println(ProgramMessages.UNDEFINE_BEHAVIOR);
-                }
+                default -> System.err.println(ProgramMessages.UNDEFINE_BEHAVIOR);
             }
         }
     }
-
-
 
     public void folderStillVisibleMenuTitles() {
         System.out.println(ProgramMessages.DEFAULT_MENU_TITLE);

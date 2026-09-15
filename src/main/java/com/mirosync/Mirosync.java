@@ -1,6 +1,5 @@
 package com.mirosync;
 
-import com.mirosync.R.ProgramMessages;
 import com.mirosync.folder.FolderManager;
 import com.mirosync.graphic.Menu;
 import com.mirosync.password.PasswordManager;
@@ -27,11 +26,27 @@ public class Mirosync {
 
         // If the software is launching for the first time, the condition is triggered
         if (isFirstRun()) {
-            menu.firstBootMenuPath();
             menu.firstBootMenuPassword();
         }
         else {
-            menu.defaultMenu();
+            menu.defaultMenu(validation.isVaultOpen());
+        }
+    }
+
+    public void firstBootMenuPathHandler() {
+        menu.firstBootMenuPath();
+        while (true) {
+            switch (menu.firstBootMenuPath()) {
+                case 1 -> {
+                    createFolderWithOriginalPath();
+                    return;
+                }
+                case 2 -> {
+                    String path = new Scanner(System.in).nextLine();
+                    createFolderWithCostumePath(path);
+                    return;
+                }
+            }
         }
     }
 
@@ -64,9 +79,11 @@ public class Mirosync {
      * It manages the password; it first encrypts it and then saves it.
      * @param password
      */
-    public void handlePassword(String password) {
+    public void handlePassword() {
         passwordManager.savePassword(
-                passwordManager.hashPassword(password)
+                passwordManager.hashPassword(
+                        menu.firstBootMenuPassword()
+                )
         );
     }
 
@@ -90,3 +107,5 @@ public class Mirosync {
     private void unlock() {folderManager.showFolder();}
     private void lock() {folderManager.hideFolder();}
 }
+
+// javac src/main/java/com/mirosync/*.java src/main/java/com/mirosync/folder/*.java src/main/java/com/mirosync/password/*.java src/main/java/com/mirosync/validate/*.java src/main/java/com/mirosync/R/*.java src/main/java/com/mirosync/graphic/*.java
