@@ -97,6 +97,8 @@ public class Mirosync {
     public void createFolderWithCostumePath(String path) {
         folderManager = new FolderManager(path);
         validation = new Validation(passwordManager, folderManager);
+        folderManager.createFolder();
+        folderManager.hideFolder();
     }
 
     // It manages the password; it first encrypts it and then saves it.
