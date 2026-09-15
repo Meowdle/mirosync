@@ -6,6 +6,7 @@ import com.mirosync.password.PasswordManager;
 import com.mirosync.validate.Validation;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Mirosync {
@@ -20,6 +21,7 @@ public class Mirosync {
     private Validation validation;
 
     public void start() {
+        clearTerminal();
         instructionsInitializer();
         System.out.println(ProgramMessages.WELCOME);
 
@@ -89,6 +91,20 @@ public class Mirosync {
         passwordManager.savePassword(
                 passwordManager.hashPassword(password)
         );
+    }
+    private void clearTerminal() {
+        try {
+            /*
+             * "cmd"  -> open window terminal
+             * "/c"   -> do this prompt, then close
+             * "cls"  -> clear screen for windows
+             */
+            new ProcessBuilder("cmd", "/c", "cls")
+                    .inheritIO()    // Use the operational terminal
+                    .start()        // Start the process (cls starts running)
+                    .waitFor();     // Wait till 'cls' command processing is finished
+        } // ignoring the exception
+        catch (InterruptedException | IOException _) {}
     }
     private void unlock() {
         folderManager.showFolder();
