@@ -17,6 +17,7 @@ public final class ProgramMessages {
     public static final String FIRST_RUN_TITLE = ">_ First boost detected. Please complete Mirosync configuration : "; // first boot title
     public static final String FIRST_RUN_ORIGINAL_PATH = "[1] Original path - (C:/User/PC_NAME/Mirosync)"; // first option - original path
     public static final String FIRST_RUN_COSTUME_PATH = "[2] Custom path"; // second option - costume path
+    public static final String FIRST_RUN_CREATE_PASSWORD = ">_ Create a strong password : ";
 
     // normal menu
     public static final String DEFAULT_MENU_TITLE = ">_ Choose what action you wanna do :";
