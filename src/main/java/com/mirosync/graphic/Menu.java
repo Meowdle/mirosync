@@ -10,9 +10,9 @@ public class Menu {
     private int input;
 
     public int firstBootMenuPath() {
+        firstBootMenuContextPath();
         while (true) {
-            firstBootMenuContextPath();
-            input = scanner.nextInt();
+            input = getInput();
             switch (input) {
                 case 1, 2 -> {
                     return input;
@@ -53,7 +53,7 @@ public class Menu {
     public int defaultMenu(boolean isFolderOpen) {
         while (true) {
             defaultMenuContext(isFolderOpen);
-            input = scanner.nextInt();
+            input = getInput();
             switch (input) {
                 case 1, 2 -> {
                     return input;
@@ -72,6 +72,15 @@ public class Menu {
                 : ProgramMessages.UNLOCK_THE_FOLDER_OPTION);
         System.out.println("\n");
         System.out.print(ProgramMessages.TERMINAL_DOODLE);
+    }
+
+    private int getInput() {
+        try {
+            return Integer.parseInt(scanner.nextLine().trim());
+        }
+        catch (NumberFormatException e) {
+            return -1;
+        }
     }
 
     public String enterPasswordMenu() {

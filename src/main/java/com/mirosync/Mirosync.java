@@ -51,21 +51,27 @@ public class Mirosync {
                     )
             ) {
                 case 1 -> {
-                    if (Objects.equals(
-                                    passwordManager.loadPassword(),
-                                    passwordManager.hashPassword(
-                                            menu.enterPasswordMenu()
-                                    )
-                    )) {
-                        unlock();
+                    if (!validation.isVaultOpen()) {
+                        if (Objects.equals(
+                                passwordManager.loadPassword(),
+                                passwordManager.hashPassword(
+                                        menu.enterPasswordMenu()
+                                )
+                        )) {
+                            unlock();
 
-                        if (menu.afterOpeningFolderMenu().equals("l")) {
-                            lock();
-                            return;
+                            if (menu.afterOpeningFolderMenu().equals("l")) {
+                                lock();
+                                return;
+                            }
+
                         }
-
+                        return;
                     }
-                    return;
+                    else {
+                        lock();
+                        return;
+                    }
                 }
                 case 2 -> {
                     // TODO [Terminal Command]
