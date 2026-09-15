@@ -20,22 +20,21 @@ public class Mirosync {
     private FolderManager folderManager;
     private PasswordManager passwordManager;
     private Validation validation;
+    private Menu menu;
 
     public void start() {
         clearTerminal();
         instructionsInitializer();
-        new Menu().startUpMenu();
 
         Scanner scanner = new Scanner(System.in);
         if (validation.isVaultOpen()) {
-            System.out.println(ProgramMessages.VAULT_STILL_OPEN);
-
+            menu.folderStillVisibleMenu();
             while (true) {
                 String answer = scanner.next().toLowerCase();
                 switch (answer) {
                     case "y", "yes" -> {
                         lock();
-                        System.out.println(ProgramMessages.LOCKED);
+                        System.out.println(ProgramMessages.FOLDER_LOCKED);
                         return;
                     }
                     case "n", "no" -> {
@@ -48,7 +47,7 @@ public class Mirosync {
             }
         }
         if (isFirstRun()) {
-            System.out.println(ProgramMessages.FIRST_RUN);
+
 
             String password = scanner.next();
             if (password == null) {
@@ -67,11 +66,11 @@ public class Mirosync {
                 System.out.print(ProgramMessages.ENTER_PASSWORD);
                 String password = scanner.next();
                 if (validation.passwordValidator(password)) {
-                    System.out.println(ProgramMessages.UNLOCKED);
+                    System.out.println(ProgramMessages.FOLDER_UNLOCKED);
                     unlock();
-                    System.out.println(ProgramMessages.PRESS_KEY);
+                    System.out.println(ProgramMessages.TYPE_L_LOCK_FOLDER);
                     scanner.next();
-                    System.out.println(ProgramMessages.LOCKED);
+                    System.out.println(ProgramMessages.FOLDER_LOCKED);
                     lock();
                     return;
                 }
@@ -79,7 +78,7 @@ public class Mirosync {
                 System.err.println(
                         retryCount == 0
                                 ? ProgramMessages.WRONG_PASSWORD
-                                : ProgramMessages.OUT_OF_CHANCE
+                                : ProgramMessages.TO_MANY_WRONG_PASSWORD_ENTRY
                 );
             }
         }
@@ -88,6 +87,7 @@ public class Mirosync {
         folderManager = new FolderManager(path);
         passwordManager = new PasswordManager();
         validation = new Validation(passwordManager, folderManager);
+        menu = new Menu();
     }
     private boolean isFirstRun() {
         return !new File("config.properties").exists();
