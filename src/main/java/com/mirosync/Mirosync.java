@@ -2,6 +2,7 @@ package com.mirosync;
 
 import com.mirosync.R.ProgramMessages;
 import com.mirosync.folder.FolderManager;
+import com.mirosync.graphic.Menu;
 import com.mirosync.password.PasswordManager;
 import com.mirosync.validate.Validation;
 
@@ -23,10 +24,10 @@ public class Mirosync {
     public void start() {
         clearTerminal();
         instructionsInitializer();
-        System.out.println(ProgramMessages.WELCOME);
+        Menu menu = new Menu();
+        menu.menu();
 
         Scanner scanner = new Scanner(System.in);
-
         if (validation.isVaultOpen()) {
             System.out.println(ProgramMessages.VAULT_STILL_OPEN);
 

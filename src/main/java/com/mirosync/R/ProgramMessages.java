@@ -4,6 +4,9 @@ public final class ProgramMessages {
     private ProgramMessages() {}
 
     public static final String WELCOME = "..:: Mirosync Protector ::..";
+    public static final String FIRST_OPTION = "[1]Create vault in default location";
+    public static final String SECOND_OPTION = "[2] Choose custom path";
+    public static final String TERMINAL_DOODLE = ">_ ";
     public static final String FIRST_RUN = "First boost detected. Please choose a password : ";
     public static final String UNLOCKED = "Folder is unlocked";
     public static final String LOCKED = "Folder is locked";
