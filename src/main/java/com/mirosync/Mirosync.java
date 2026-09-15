@@ -87,7 +87,11 @@ public class Mirosync {
         folderManager = new FolderManager(path);
         passwordManager = new PasswordManager();
         validation = new Validation(passwordManager, folderManager);
-        menu = new Menu();
+        menu = new Menu(
+                folderManager,
+                passwordManager,
+                validation
+        );
     }
     private boolean isFirstRun() {
         return !new File("config.properties").exists();

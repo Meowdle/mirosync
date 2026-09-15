@@ -19,7 +19,7 @@ public final class ProgramMessages {
     public static final String FIRST_RUN_COSTUME_PATH = "[2] Custom path"; // second option - costume path
 
     // normal menu
-    public static final String STILL_VISIBLE_LOCK_IT_TITLE = ">_ Choose what action you wanna do :";
+    public static final String DEFAULT_MENU_TITLE = ">_ Choose what action you wanna do :";
     public static final String UNLOCK_THE_FOLDER_OPTION = "[1] Unlock folder";
     public static final String LOCK_THE_FOLDER_OPTION = "[1] Lock folder";
     public static final String STILL_VISIBLE_LEAVE_IT = "[2] Terminal";

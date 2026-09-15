@@ -13,6 +13,17 @@ public class Menu {
     private Validation validation;
     private final Scanner scanner = new Scanner(System.in);
     private int input;
+
+    public Menu(
+            FolderManager folderManager,
+            PasswordManager passwordManager,
+            Validation validation
+    ) {
+        this.folderManager = folderManager;
+        this.passwordManager = passwordManager;
+        this.validation = validation;
+    }
+
     public void startUpMenu() {
 
         while (true) {
@@ -35,6 +46,39 @@ public class Menu {
                 }
             }
         }
+    }
+
+    public void defaultMenu() {
+        while (true) {
+            defaultMenuContext();
+            input = scanner.nextInt();
+            switch (input) {
+                case 1 -> {
+                    if (!validation.isVaultOpen()) folderManager.showFolder();
+                    else folderManager.hideFolder();
+                    return;
+                }
+                case 2 -> {
+                    // TODO [Terminal Command]
+                    return;
+                }
+                default -> System.err.println(ProgramMessages.UNDEFINE_BEHAVIOR);
+            }
+        }
+    }
+    private void defaultMenuContext() {
+        System.out.println(ProgramMessages.TITLE);                  // ..:: Mirosync ::..
+        System.out.println("\n");                                   //
+        System.out.println(ProgramMessages.DEFAULT_MENU_TITLE);     // >_ Choose what action you wanna do :
+        System.out.println("\n");                                   //
+
+        if (!validation.isVaultOpen())
+            System.out.println(ProgramMessages.UNLOCK_THE_FOLDER_OPTION);
+        else
+            System.out.println(ProgramMessages.LOCK_THE_FOLDER_OPTION);
+
+        System.out.println("\n");
+        System.out.print(ProgramMessages.TERMINAL_DOODLE);
     }
 
     public void folderStillVisibleMenu() {
@@ -72,7 +116,7 @@ public class Menu {
     }
 
     public void folderStillVisibleMenuTitles() {
-        System.out.println(ProgramMessages.STILL_VISIBLE_LOCK_IT_TITLE);
+        System.out.println(ProgramMessages.DEFAULT_MENU_TITLE);
         System.out.println("\n");
         System.out.println(ProgramMessages.LOCK_THE_FOLDER_OPTION);
         System.out.println(ProgramMessages.STILL_VISIBLE_LEAVE_IT);
