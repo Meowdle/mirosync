@@ -33,6 +33,7 @@ public class Mirosync {
                 switch (answer) {
                     case "y", "yes" -> {
                         lock();
+                        System.out.println(ProgramMessages.LOCKED);
                         return;
                     }
                     case "n", "no" -> {
@@ -60,6 +61,7 @@ public class Mirosync {
             int retryCount = 3;
             while (retryCount != 0) {
                 retryCount--;
+                System.out.print(ProgramMessages.ENTER_PASSWORD);
                 String password = scanner.next();
                 if (validation.passwordValidator(password)) {
                     System.out.println(ProgramMessages.UNLOCKED);
