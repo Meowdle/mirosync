@@ -3,7 +3,7 @@ package com.mirosync.R;
 public final class ProgramMessages {
     private ProgramMessages() {}
 
-    public static final String WELCOME = "..:: Mirosync Protector ::..";
+    public static final String TITLE = "..:: Mirosync Protector ::..";
     public static final String FIRST_OPTION = "[1]Create vault in default location";
     public static final String SECOND_OPTION = "[2] Choose custom path";
     public static final String TERMINAL_DOODLE = ">_ ";
@@ -16,6 +16,8 @@ public final class ProgramMessages {
     public static String triesLeft(int count) {
         return "Tries left: " + count;
     }
+    public static final String OUT_OF_CHANCE = "[3] Wrong password entered. ~ Program locked.\n" +
+            "TIP : Rerun the program to enter your password again";
     public static final String VAULT_STILL_OPEN = "Folder is still unlocked and visible. Lock it? [Y/N]";
     public static final String UNDEFINE_BEHAVIOR = "Undefine_behavior";
     public static final String ENTER_PASSWORD = "Enter your password ";

@@ -24,8 +24,7 @@ public class Mirosync {
     public void start() {
         clearTerminal();
         instructionsInitializer();
-        Menu menu = new Menu();
-        menu.menu();
+        new Menu().startUpMenu();
 
         Scanner scanner = new Scanner(System.in);
         if (validation.isVaultOpen()) {
@@ -62,6 +61,7 @@ public class Mirosync {
         }
         else {
             int retryCount = 3;
+            System.out.println(ProgramMessages.TITLE);
             while (retryCount != 0) {
                 retryCount--;
                 System.out.print(ProgramMessages.ENTER_PASSWORD);
@@ -76,7 +76,11 @@ public class Mirosync {
                     return;
                 }
                 System.out.println(ProgramMessages.triesLeft(retryCount));
-                System.err.println(ProgramMessages.WRONG_PASSWORD);
+                System.err.println(
+                        retryCount == 0
+                                ? ProgramMessages.WRONG_PASSWORD
+                                : ProgramMessages.OUT_OF_CHANCE
+                );
             }
         }
     }

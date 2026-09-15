@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class Menu {
     private final Scanner scanner = new Scanner(System.in);
-    public void menu() {
+    public void startUpMenu() {
 
         while (true) {
             welcomeMenu();
@@ -27,8 +27,12 @@ public class Menu {
         }
     }
 
+    public void enterPasswordMenu() {
+
+    }
+
     private void welcomeMenu() {
-        System.out.println(ProgramMessages.WELCOME);
+        System.out.println(ProgramMessages.TITLE);
         System.out.println("\n");
         System.out.println(ProgramMessages.FIRST_OPTION);
         System.out.println(ProgramMessages.SECOND_OPTION);
