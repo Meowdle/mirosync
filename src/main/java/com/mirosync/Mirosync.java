@@ -107,5 +107,3 @@ public class Mirosync {
     private void unlock() {folderManager.showFolder();}
     private void lock() {folderManager.hideFolder();}
 }
-
-// javac src/main/java/com/mirosync/*.java src/main/java/com/mirosync/folder/*.java src/main/java/com/mirosync/password/*.java src/main/java/com/mirosync/validate/*.java src/main/java/com/mirosync/R/*.java src/main/java/com/mirosync/graphic/*.java
