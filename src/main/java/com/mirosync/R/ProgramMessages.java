@@ -13,4 +13,7 @@ public final class ProgramMessages {
     public static String triesLeft(int count) {
         return "Tries left: " + count;
     }
+    public static final String VAULT_STILL_OPEN = "Folder is still unlocked and visible. Lock it? [Y/N]";
+    public static final String UNDEFINE_BEHAVIOR = "Undefine_behavior";
+    public static final String ENTER_PASSWORD = "Enter your password ";
 }

@@ -70,8 +70,9 @@ public class FolderManager {
         }
     }
 
-    // It checks whether the folder has been created at the specified path
-    public boolean exists() {
-        return Files.exists(Path.of(DEFAULT_PATH));
+    public boolean isVisible() throws IOException {
+        return !(boolean) Files.getAttribute(
+                Path.of(pathAddress), "dos:hidden"
+        );
     }
 }
