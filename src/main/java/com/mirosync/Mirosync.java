@@ -7,7 +7,7 @@ import com.mirosync.validate.Validation;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Scanner;
+import java.util.Objects;
 
 public class Mirosync {
 
@@ -16,7 +16,7 @@ public class Mirosync {
     private Validation validation;
     private Menu menu;
 
-    public void START() {
+    public void start() {
 
         // Refer to the terminal cleaning step from the previous instructions
         clearTerminal();
@@ -26,15 +26,15 @@ public class Mirosync {
 
         // If the software is launching for the first time, the condition is triggered
         if (isFirstRun()) {
-            menu.firstBootMenuPassword();
+            firstBootMenuPathHandler();
+            handlePassword();
         }
         else {
-            menu.defaultMenu(validation.isVaultOpen());
+            defaultMenu();
         }
     }
 
     public void firstBootMenuPathHandler() {
-        menu.firstBootMenuPath();
         while (true) {
             switch (menu.firstBootMenuPath()) {
                 case 1 -> {
@@ -42,8 +42,39 @@ public class Mirosync {
                     return;
                 }
                 case 2 -> {
-                    String path = new Scanner(System.in).nextLine();
-                    createFolderWithCostumePath(path);
+                    createFolderWithCostumePath(
+                            menu.firstBootMenuCustomPath()
+                    );
+                    return;
+                }
+            }
+        }
+    }
+
+    public void defaultMenu() {
+        while (true) {
+            switch (
+                    menu.defaultMenu(
+                            validation.isVaultOpen()
+                    )
+            ) {
+                case 1 -> {
+                    if (Objects.equals(
+                                    passwordManager.loadPassword(),
+                                    menu.enterPasswordMenu()
+                    )) {
+                        unlock();
+                        while (true) {
+                            if (menu.afterOpeningFolderMenu().equals("l")) {
+                                lock();
+                                return;
+                            }
+                        }
+                    }
+                    return;
+                }
+                case 2 -> {
+                    // TODO [Terminal Command]
                     return;
                 }
             }
@@ -71,10 +102,7 @@ public class Mirosync {
         folderManager = new FolderManager(path);
     }
 
-    /**
-     * It manages the password; it first encrypts it and then saves it.
-     * @param password
-     */
+    // It manages the password; it first encrypts it and then saves it.
     public void handlePassword() {
         passwordManager.savePassword(
                 passwordManager.hashPassword(

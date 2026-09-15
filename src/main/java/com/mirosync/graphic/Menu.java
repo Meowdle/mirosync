@@ -21,6 +21,10 @@ public class Menu {
             }
         }
     }
+    public String firstBootMenuCustomPath() {
+        System.out.print(ProgramMessages.FIRST_RUN_CHOOSE_PATH);
+        return scanner.next();
+    }
     private void firstBootMenuContextPath() {
         System.out.println(ProgramMessages.TITLE);
         System.out.println("\n");
@@ -70,25 +74,13 @@ public class Menu {
         System.out.print(ProgramMessages.TERMINAL_DOODLE);
     }
 
-    public int folderStillVisibleMenu() {
-        while (true) {
-            folderStillVisibleMenuTitles();
-            input = scanner.nextInt();
-            switch (input) {
-                case 1, 2-> {
-                    return input;
-                }
-                default -> System.err.println(ProgramMessages.UNDEFINE_BEHAVIOR);
-            }
-        }
+    public String enterPasswordMenu() {
+        System.out.println(ProgramMessages.ENTER_PASSWORD);
+        return scanner.next();
     }
 
-    public void folderStillVisibleMenuTitles() {
-        System.out.println(ProgramMessages.DEFAULT_MENU_TITLE);
-        System.out.println("\n");
-        System.out.println(ProgramMessages.LOCK_THE_FOLDER_OPTION);
-        System.out.println(ProgramMessages.STILL_VISIBLE_LEAVE_IT);
-        System.out.println("\n");
-        System.out.print(ProgramMessages.TERMINAL_DOODLE);
+    public String afterOpeningFolderMenu() {
+        System.out.println(ProgramMessages.TYPE_L_LOCK_FOLDER);
+        return scanner.next().toLowerCase();
     }
 }
