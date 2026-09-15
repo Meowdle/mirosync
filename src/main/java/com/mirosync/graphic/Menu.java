@@ -64,8 +64,8 @@ public class Menu {
         System.out.println(ProgramMessages.DEFAULT_MENU_TITLE);
         System.out.println("\n");
         System.out.println(isFolderOpen
-                ? ProgramMessages.UNLOCK_THE_FOLDER_OPTION
-                : ProgramMessages.LOCK_THE_FOLDER_OPTION);
+                ? ProgramMessages.LOCK_THE_FOLDER_OPTION
+                : ProgramMessages.UNLOCK_THE_FOLDER_OPTION);
         System.out.println("\n");
         System.out.print(ProgramMessages.TERMINAL_DOODLE);
     }
