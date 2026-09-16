@@ -1,98 +1,124 @@
 package com.mirosync;
 
-import com.mirosync.R.ProgramMessages;
 import com.mirosync.folder.FolderManager;
+import com.mirosync.graphic.Menu;
 import com.mirosync.password.PasswordManager;
 import com.mirosync.validate.Validation;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Scanner;
+import java.util.Objects;
 
 public class Mirosync {
-
-    private final String path;
-    public Mirosync(String path) {
-        this.path = path;
-    }
 
     private FolderManager folderManager;
     private PasswordManager passwordManager;
     private Validation validation;
+    private Menu menu;
 
     public void start() {
+
+        // Refer to the terminal cleaning step from the previous instructions
         clearTerminal();
+
+        // Reference to the core constructor
         instructionsInitializer();
-        System.out.println(ProgramMessages.WELCOME);
 
-        Scanner scanner = new Scanner(System.in);
-
-        if (validation.isVaultOpen()) {
-            System.out.println(ProgramMessages.VAULT_STILL_OPEN);
-
-            while (true) {
-                String answer = scanner.next().toLowerCase();
-                switch (answer) {
-                    case "y", "yes" -> {
-                        lock();
-                        System.out.println(ProgramMessages.LOCKED);
-                        return;
-                    }
-                    case "n", "no" -> {
-                        return;
-                    }
-                    default -> {
-                        System.err.println(ProgramMessages.UNDEFINE_BEHAVIOR);
-                    }
-                }
-            }
-        }
+        // If the software is launching for the first time, the condition is triggered
         if (isFirstRun()) {
-            System.out.println(ProgramMessages.FIRST_RUN);
-
-            String password = scanner.next();
-            if (password == null) {
-                System.err.println(ProgramMessages.USE_TERMINAL);
-                return;
-            }
-            handleInput(password);
-            folderManager.createFolder();
-            lock();
+            firstBootMenuPathHandler();
+            handlePassword();
         }
         else {
-            int retryCount = 3;
-            while (retryCount != 0) {
-                retryCount--;
-                System.out.print(ProgramMessages.ENTER_PASSWORD);
-                String password = scanner.next();
-                if (validation.passwordValidator(password)) {
-                    System.out.println(ProgramMessages.UNLOCKED);
-                    unlock();
-                    System.out.println(ProgramMessages.PRESS_KEY);
-                    scanner.next();
-                    System.out.println(ProgramMessages.LOCKED);
-                    lock();
+            defaultMenu();
+        }
+    }
+
+    public void firstBootMenuPathHandler() {
+        switch (menu.firstBootMenuPath()) {
+            case 1 -> createFolderWithOriginalPath();
+            case 2 -> createFolderWithCostumePath(
+                    menu.firstBootMenuCustomPath()
+            );
+        }
+    }
+
+    public void defaultMenu() {
+        while (true) {
+            switch (
+                    menu.defaultMenu(
+                            validation.isVaultOpen()
+                    )
+            ) {
+                case 1 -> {
+                    clearTerminal();
+                    if (!validation.isVaultOpen()) {
+                        if (Objects.equals(
+                                passwordManager.loadPassword(),
+                                passwordManager.hashPassword(
+                                        menu.enterPasswordMenu()
+                                )
+                        )) {
+                            unlock();
+
+                            if (menu.afterOpeningFolderMenu().equals("l")) {
+                                lock();
+                                return;
+                            }
+
+                        }
+                        return;
+                    }
+                    else {
+                        lock();
+                        return;
+                    }
+                }
+                case 2 -> {
+                    // TODO [Terminal Command]
                     return;
                 }
-                System.out.println(ProgramMessages.triesLeft(retryCount));
-                System.err.println(ProgramMessages.WRONG_PASSWORD);
             }
         }
     }
+
+    // Core Builder
     private void instructionsInitializer() {
-        folderManager = new FolderManager(path);
         passwordManager = new PasswordManager();
+        folderManager = new FolderManager(null);
         validation = new Validation(passwordManager, folderManager);
+        menu = new Menu();
     }
+    // It checks whether the software is being run for the first time
     private boolean isFirstRun() {
         return !new File("config.properties").exists();
     }
-    private void handleInput(String password) {
+
+    // Start Menu – Option to create a folder with the root path
+    public void createFolderWithOriginalPath() {
+        folderManager.createFolder();
+        folderManager.hideFolder();
+    }
+
+    // Start Menu – Option to create a folder at a selected location
+    public void createFolderWithCostumePath(String path) {
+        folderManager = new FolderManager(path);
+        validation = new Validation(passwordManager, folderManager);
+        folderManager.createFolder();
+        folderManager.hideFolder();
+    }
+
+    // It manages the password; it first encrypts it and then saves it.
+    public void handlePassword() {
         passwordManager.savePassword(
-                passwordManager.hashPassword(password)
+                passwordManager.hashPassword(
+                        menu.firstBootMenuPassword()
+                )
         );
     }
-    private void clearTerminal() {
+
+    // Clearing the terminal of previous commands
+    public void clearTerminal() {
         try {
             /*
              * "cmd"  -> open window terminal
@@ -106,10 +132,8 @@ public class Mirosync {
         } // ignoring the exception
         catch (InterruptedException | IOException _) {}
     }
-    private void unlock() {
-        folderManager.showFolder();
-    }
-    private void lock() {
-        folderManager.hideFolder();
-    }
+
+    // For quick management of file locking and unlocking
+    private void unlock() {folderManager.showFolder();}
+    private void lock() {folderManager.hideFolder();}
 }
