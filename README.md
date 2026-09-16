@@ -13,7 +13,9 @@ A password-protected folder that hides itself when locked.
 - Hidden folder via Windows `attrib`
 - Password stored securely in `config.properties`
 - 3 retry attempts on wrong password
+- 15-minute lockout after 3 failed attempts
 - Detects unlocked vault on startup
+- Interactive terminal menu
 
 ## Run
 ```bash
@@ -25,12 +27,19 @@ java -cp src/main/java com.mirosync.Main
 ## Project Structure
 ```
 com.mirosync/
-├── core/       → Mirosync.java
-├── folder/     → FolderManager.java
-├── password/   → PasswordManager.java
-├── validate/   → Validation.java
-└── R/          → ProgramMessages.java
+├── Mirosync.java   → core logic
+├── folder/         → FolderManager.java
+├── password/       → PasswordManager.java
+├── validate/       → Validation.java
+├── security/       → LockoutManager.java
+├── graphic/        → Menu.java
+└── R/              → ProgramMessages.java
 ```
 
+## Roadmap
+- [ ] Mini CLI (`miro ~info:size`, `miro ~info:count`, ...)
+- [ ] Cross-platform support
+
+
 ## Status
-> v0.2 — Refactored. Menu and custom path selection coming next.
+> v0.3 — Lockout system and interactive menu complete.
