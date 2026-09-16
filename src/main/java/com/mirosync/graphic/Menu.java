@@ -93,7 +93,7 @@ public class Menu {
         }
     }
 
-    public String enterPasswordMenu() {
+    public String enterPasswordMenuHeader() {
         System.out.println(ProgramMessages.TITLE);
         System.out.println("\n");
         System.out.println(ProgramMessages.ENTER_PASSWORD);
@@ -101,14 +101,47 @@ public class Menu {
         return scanner.next();
     }
 
+    public String enterPasswordMenu() {
+        return scanner.nextLine().trim();
+    }
+
     public String afterOpeningFolderMenu() {
+        System.out.println(ProgramMessages.TITLE);
+        System.out.println("\n");
+        System.out.println(ProgramMessages.FOLDER_UNLOCKED);
         System.out.println(ProgramMessages.TYPE_L_LOCK_FOLDER);
         while (true) {
             System.out.println("\n");
             System.out.print(ProgramMessages.TERMINAL_DOODLE);
             String answer = scanner.next().toLowerCase();
-            if (answer.equals("l"))
+            if (answer.equals("l")) {
+                System.out.println(ProgramMessages.FOLDER_LOCKED);
                 return answer;
+            }
         }
+    }
+
+    public void lockedProgramMenu(long minutesRemaining) {
+        lockedProgramMenuContext(minutesRemaining);
+    }
+
+    private void lockedProgramMenuContext(long minutesRemaining) {
+        System.out.println(ProgramMessages.TITLE);
+        System.out.println("\n");
+        System.out.println(ProgramMessages.LOCKED_MENU_TITLE);
+        System.out.println("\n");
+        System.out.println(
+                ProgramMessages.timeLeftToUnlock(
+                        minutesRemaining
+                )
+        );
+    }
+
+    public void wrongPasswordMenu(int triesLeft) {
+        System.out.println("\n");
+        System.out.println(ProgramMessages.WRONG_PASSWORD);
+        System.out.println(ProgramMessages.triesLeft(triesLeft));
+        System.out.println("\n");
+        System.out.print(ProgramMessages.TERMINAL_DOODLE);
     }
 }
