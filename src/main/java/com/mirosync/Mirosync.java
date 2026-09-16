@@ -3,6 +3,7 @@ package com.mirosync;
 import com.mirosync.folder.FolderManager;
 import com.mirosync.graphic.Menu;
 import com.mirosync.password.PasswordManager;
+import com.mirosync.security.LockoutManager;
 import com.mirosync.validate.Validation;
 
 import java.io.File;
@@ -15,6 +16,7 @@ public class Mirosync {
     private PasswordManager passwordManager;
     private Validation validation;
     private Menu menu;
+    private LockoutManager lockoutManager;
 
     public void start() {
 
@@ -44,7 +46,15 @@ public class Mirosync {
     }
 
     public void defaultMenu() {
+        if (lockoutManager.isLocked()) {
+            clearTerminal();
+            menu.lockedProgramMenu(
+                    lockoutManager.remainingTimeToUnlock()
+            );
+            return;
+        }
         while (true) {
+
             switch (
                     menu.defaultMenu(
                             validation.isVaultOpen()
@@ -52,20 +62,30 @@ public class Mirosync {
             ) {
                 case 1 -> {
                     clearTerminal();
-                    if (!validation.isVaultOpen()) {
-                        if (Objects.equals(
-                                passwordManager.loadPassword(),
-                                passwordManager.hashPassword(
-                                        menu.enterPasswordMenu()
-                                )
-                        )) {
-                            unlock();
 
-                            if (menu.afterOpeningFolderMenu().equals("l")) {
+                    if (!validation.isVaultOpen()) {
+                        menu.enterPasswordMenuHeader();
+                        int tryLeft = 3;
+                        while (tryLeft != 0) {
+                            tryLeft--;
+                            if (validation.passwordValidator(
+                                    menu.enterPasswordMenu()
+                            )) {
+                                unlock();
+                                menu.afterOpeningFolderMenu();
                                 lock();
                                 return;
                             }
 
+                            if (tryLeft == 0) {
+                                clearTerminal();
+                                lockoutManager.lockOut();
+                                menu.lockedProgramMenu(
+                                        lockoutManager.remainingTimeToUnlock()
+                                );
+                                return;
+                            }
+                            menu.wrongPasswordMenu(tryLeft);
                         }
                         return;
                     }
@@ -88,6 +108,7 @@ public class Mirosync {
         folderManager = new FolderManager(null);
         validation = new Validation(passwordManager, folderManager);
         menu = new Menu();
+        lockoutManager = new LockoutManager();
     }
     // It checks whether the software is being run for the first time
     private boolean isFirstRun() {

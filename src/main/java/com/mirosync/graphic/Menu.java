@@ -93,12 +93,16 @@ public class Menu {
         }
     }
 
-    public String enterPasswordMenu() {
+    public String enterPasswordMenuHeader() {
         System.out.println(ProgramMessages.TITLE);
         System.out.println("\n");
         System.out.println(ProgramMessages.ENTER_PASSWORD);
         System.out.print(ProgramMessages.TERMINAL_DOODLE);
         return scanner.next();
+    }
+
+    public String enterPasswordMenu() {
+        return scanner.nextLine().trim();
     }
 
     public String afterOpeningFolderMenu() {
@@ -110,5 +114,28 @@ public class Menu {
             if (answer.equals("l"))
                 return answer;
         }
+    }
+
+    public void lockedProgramMenu(long minutesRemaining) {
+        lockedProgramMenuContext(minutesRemaining);
+    }
+
+    private void lockedProgramMenuContext(long minutesRemaining) {
+        System.out.println(ProgramMessages.TITLE);
+        System.out.println("\n");
+        System.out.println(ProgramMessages.LOCKED_MENU_TITLE);
+        System.out.println("\n");
+        System.out.println(
+                ProgramMessages.timeLeftToUnlock(
+                        minutesRemaining
+                )
+        );
+    }
+
+    public void wrongPasswordMenu(int triesLeft) {
+        System.out.println(ProgramMessages.WRONG_PASSWORD);
+        System.out.println(ProgramMessages.triesLeft(triesLeft));
+        System.out.println("\n");
+        System.out.print(ProgramMessages.TERMINAL_DOODLE);
     }
 }
