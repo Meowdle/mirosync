@@ -11,10 +11,16 @@ public class LockoutManager {
     private static final String LOCKOUT_KEY = "lockout_until";
 
     public boolean isLocked() {
+
+        // get the 'key' value form property
         String value = load().getProperty(LOCKOUT_KEY);
+
+        // checks if the kay value is null or file has not been created
+        // all these means the file is not locked
         if (value == null) return false;
-        return System.currentTimeMillis()
-                < Long.parseLong(value);
+
+        return System.currentTimeMillis()   // ms time passed
+                < Long.parseLong(value);    // convert string to long format
     }
 
     public void lockOut() {
@@ -22,25 +28,29 @@ public class LockoutManager {
                 LOCKOUT_KEY,
                 String.valueOf(
                         System.currentTimeMillis() + (15 * 60 * 1000)
-                )
+                ) // convert long to string format
         );
+        // after setting in cache, file will be saved
         save();
     }
 
     private Properties load() {
+        // opens a file stream for reading a file
         try (FileInputStream fileInputStream
-                     = new FileInputStream(LOCKOUT_FILE)) {
+                     = new FileInputStream(LOCKOUT_FILE)) { // close stream after
             properties.load(fileInputStream);
-        }
+        } // ignore the exception
         catch (Exception _) {}
         return properties;
     }
 
     private void save() {
+        // opens a file stream for writing on files
         try (FileOutputStream fileOutputStream
-                    = new FileOutputStream(LOCKOUT_FILE)) {
+                    = new FileOutputStream(LOCKOUT_FILE)) { // close stream after
+            // store the information
             properties.store(fileOutputStream, null);
-        }
+        } // if it didn't save
         catch (Exception e) {
             throw new RuntimeException(e);
         }
