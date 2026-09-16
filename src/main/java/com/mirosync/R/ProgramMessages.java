@@ -7,10 +7,10 @@ public final class ProgramMessages {
     // global
     public static final String TITLE = "..:: Mirosync ::..";
     public static final String TERMINAL_DOODLE = ">_ ";
-    public static final String FOLDER_LOCKED = "Folder is locked";
-    public static final String FOLDER_UNLOCKED = "Folder is unlocked";
-    public static final String UNDEFINE_BEHAVIOR = "Undefine_behavior";
-    public static final String TYPE_L_LOCK_FOLDER = "Type [L, l] to lock your folder.";
+    public static final String FOLDER_LOCKED = "- Folder is locked";
+    public static final String FOLDER_UNLOCKED = "- Folder is unlocked";
+    public static final String UNDEFINE_BEHAVIOR = "[Undefine_behavior]";
+    public static final String TYPE_L_LOCK_FOLDER = "- Type [L, l] to lock your folder.";
     public static final String ENTER_PASSWORD = ">_ Enter your password : ";
 
     // == first boot ==

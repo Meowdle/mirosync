@@ -106,13 +106,17 @@ public class Menu {
     }
 
     public String afterOpeningFolderMenu() {
+        System.out.println("\n");
+        System.out.println(ProgramMessages.FOLDER_UNLOCKED);
         System.out.println(ProgramMessages.TYPE_L_LOCK_FOLDER);
         while (true) {
             System.out.println("\n");
             System.out.print(ProgramMessages.TERMINAL_DOODLE);
             String answer = scanner.next().toLowerCase();
-            if (answer.equals("l"))
+            if (answer.equals("l")) {
+                System.out.println(ProgramMessages.FOLDER_LOCKED);
                 return answer;
+            }
         }
     }
 
@@ -133,6 +137,7 @@ public class Menu {
     }
 
     public void wrongPasswordMenu(int triesLeft) {
+        System.out.println("\n");
         System.out.println(ProgramMessages.WRONG_PASSWORD);
         System.out.println(ProgramMessages.triesLeft(triesLeft));
         System.out.println("\n");
