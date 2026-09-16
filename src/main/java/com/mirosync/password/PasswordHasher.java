@@ -7,7 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 
-public class PasswordHasher {
+public final class PasswordHasher {
 
     private final SecureRandom secureRandom;
     private final SecretKeyFactory secretKeyFactory;
@@ -15,10 +15,11 @@ public class PasswordHasher {
     public PasswordHasher() {
         secureRandom = new SecureRandom();
         try {
+            // select the algorithm we wanna use
             secretKeyFactory = SecretKeyFactory.getInstance(
                     "PBKDF2WithHmacSHA256"
             );
-        }
+        } // ain't no way
         catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
@@ -29,20 +30,24 @@ public class PasswordHasher {
         byte[] salt = new byte[16];
         secureRandom.nextBytes(salt);
 
+        final PBEKeySpec pbeKeySpec = new PBEKeySpec(
+                passwordToChar,
+                salt,
+                310_000,
+                256
+        );
         try {
             byte[] hash = secretKeyFactory.generateSecret(
-                    new PBEKeySpec(
-                            passwordToChar,
-                            salt,
-                            310_000,
-                            256
-                    )
+                    pbeKeySpec
             ).getEncoded();
 
             return new HashResults(hash, salt);
         }
         catch (InvalidKeySpecException e) {
             throw new RuntimeException(e);
+        }
+        finally {
+            pbeKeySpec.clearPassword();
         }
     }
 
@@ -51,20 +56,25 @@ public class PasswordHasher {
             byte[] storedHash,
             byte[] storedSalt
     ) {
+
+        final PBEKeySpec pbeKeySpec = new PBEKeySpec(
+                password.toCharArray(),
+                storedSalt,
+                310_000,
+                256
+        );
         try {
             byte[] newHash = secretKeyFactory.generateSecret(
-                    new PBEKeySpec(
-                            password.toCharArray(),
-                            storedSalt,
-                            310_000,
-                            256
-                    )
+                    pbeKeySpec
             ).getEncoded();
 
             return MessageDigest.isEqual(storedHash, newHash);
         }
         catch (InvalidKeySpecException  e) {
             throw new RuntimeException(e);
+        }
+        finally {
+            pbeKeySpec.clearPassword();
         }
     }
 
