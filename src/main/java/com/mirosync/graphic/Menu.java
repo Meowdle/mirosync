@@ -106,6 +106,7 @@ public class Menu {
     }
 
     public String afterOpeningFolderMenu() {
+        System.out.println(ProgramMessages.TITLE);
         System.out.println("\n");
         System.out.println(ProgramMessages.FOLDER_UNLOCKED);
         System.out.println(ProgramMessages.TYPE_L_LOCK_FOLDER);

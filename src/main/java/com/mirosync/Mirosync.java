@@ -72,8 +72,10 @@ public class Mirosync {
                                     menu.enterPasswordMenu()
                             )) {
                                 unlock();
-                                menu.afterOpeningFolderMenu();
-                                lock();
+                                if (menu.afterOpeningFolderMenu().equals("l")) {
+                                    clearTerminal();
+                                    lock();
+                                }
                                 return;
                             }
 
