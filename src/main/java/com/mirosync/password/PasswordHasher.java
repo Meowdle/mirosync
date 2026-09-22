@@ -11,6 +11,9 @@ public final class PasswordHasher {
 
     private final SecureRandom secureRandom;
     private final SecretKeyFactory secretKeyFactory;
+    private static final int ITERATIONS = 310_000;
+    private static final int KEY_LENGTH = 256;
+    private static final int SALT_LENGTH = 16;
 
     public PasswordHasher() {
         secureRandom = new SecureRandom();
@@ -27,14 +30,14 @@ public final class PasswordHasher {
 
     public HashResults generateHash(String password) {
         char[] passwordToChar = password.toCharArray();
-        byte[] salt = new byte[16];
+        byte[] salt = new byte[SALT_LENGTH];
         secureRandom.nextBytes(salt);
 
         final PBEKeySpec pbeKeySpec = new PBEKeySpec(
                 passwordToChar,
                 salt,
-                310_000,
-                256
+                ITERATIONS,
+                KEY_LENGTH
         );
         try {
             byte[] hash = secretKeyFactory.generateSecret(
@@ -60,8 +63,8 @@ public final class PasswordHasher {
         final PBEKeySpec pbeKeySpec = new PBEKeySpec(
                 password.toCharArray(),
                 storedSalt,
-                310_000,
-                256
+                ITERATIONS,
+                KEY_LENGTH
         );
         try {
             byte[] newHash = secretKeyFactory.generateSecret(
@@ -70,7 +73,7 @@ public final class PasswordHasher {
 
             return MessageDigest.isEqual(storedHash, newHash);
         }
-        catch (InvalidKeySpecException  e) {
+        catch (InvalidKeySpecException e) {
             throw new RuntimeException(e);
         }
         finally {

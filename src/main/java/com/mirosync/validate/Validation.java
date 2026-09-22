@@ -1,27 +1,30 @@
 package com.mirosync.validate;
 
 import com.mirosync.folder.FolderManager;
-import com.mirosync.password.PasswordManager;
+import com.mirosync.password.PasswordHasher;
+import com.mirosync.password.PasswordStorage;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Objects;
 
 public class Validation {
 
-    private final PasswordManager passwordManager;
     private final FolderManager folderManager;
+    private final PasswordHasher passwordHasher;
+    private final PasswordStorage passwordStorage;
 
-    public Validation(PasswordManager passwordManager,
-                      FolderManager folderManager) {
+    public Validation(FolderManager folderManager,
+                      PasswordHasher passwordHasher,
+                      PasswordStorage passwordStorage) {
 
-        this.passwordManager = passwordManager;
-        this.folderManager = folderManager;
+        this.folderManager   = folderManager;
+        this.passwordHasher  = passwordHasher;
+        this.passwordStorage = passwordStorage;
     }
     public boolean passwordValidator(String password) {
-        return Objects.equals(
-                passwordManager.hashPassword(password),
-                passwordManager.loadPassword()
+        return passwordHasher.verify(
+                password,
+                passwordStorage.loadHash(),
+                passwordStorage.loadSalt()
         );
     }
     public boolean isVaultOpen() {

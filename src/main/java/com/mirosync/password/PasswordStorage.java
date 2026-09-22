@@ -1,7 +1,6 @@
 package com.mirosync.password;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Base64;
@@ -9,13 +8,11 @@ import java.util.Properties;
 
 public class PasswordStorage {
 
-    private String hash;
-    private String salt;
     public void save(PasswordHasher.HashResults results) {
-        hash = Base64
+        String hash = Base64
                 .getEncoder()
                 .encodeToString(results.hash());
-        salt = Base64
+        String salt = Base64
                 .getEncoder()
                 .encodeToString(results.salt());
 
