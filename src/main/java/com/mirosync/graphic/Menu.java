@@ -11,6 +11,10 @@ public class Menu {
 
     public int firstBootMenuPath() {
         firstBootMenuContextPath();
+        return inputSwitcher();
+    }
+
+    private int inputSwitcher() {
         while (true) {
             input = getInput();
             switch (input) {
@@ -24,6 +28,7 @@ public class Menu {
             }
         }
     }
+
     public String firstBootMenuCustomPath() {
         System.out.print(ProgramMessages.FIRST_RUN_CHOOSE_PATH);
         System.out.println("\n");
@@ -35,6 +40,7 @@ public class Menu {
         System.out.println("\n");
         System.out.println(ProgramMessages.FIRST_RUN_TITLE);
         System.out.println("\n");
+        System.out.println(ProgramMessages.FIRST_RUN_CHOOS_PATH);
         System.out.println(ProgramMessages.FIRST_RUN_ORIGINAL_PATH);
         System.out.println(ProgramMessages.FIRST_RUN_COSTUME_PATH);
         System.out.println("\n");
@@ -59,28 +65,15 @@ public class Menu {
 
     public int defaultMenu(boolean isFolderOpen) {
         defaultMenuContext(isFolderOpen);
-        while (true) {
-            input = getInput();
-            switch (input) {
-                case 1, 2 -> {
-                    return input;
-                }
-                default -> {
-                    System.err.println(ProgramMessages.UNDEFINE_BEHAVIOR);
-                    System.out.print(ProgramMessages.TERMINAL_DOODLE);
-                }
-            }
-        }
+        return inputSwitcher();
     }
     private void defaultMenuContext(boolean isFolderOpen) {
         System.out.println(ProgramMessages.TITLE);
         System.out.println("\n");
         System.out.println(ProgramMessages.DEFAULT_MENU_TITLE);
-        System.out.println("\n");
         System.out.println(isFolderOpen
                 ? ProgramMessages.LOCK_THE_FOLDER_OPTION
                 : ProgramMessages.UNLOCK_THE_FOLDER_OPTION);
-        System.out.println("\n");
         System.out.print(ProgramMessages.TERMINAL_DOODLE);
     }
 
@@ -93,15 +86,14 @@ public class Menu {
         }
     }
 
-    public String enterPasswordMenuHeader() {
+    public void enterPasswordMenuHeader() {
         System.out.println(ProgramMessages.TITLE);
         System.out.println("\n");
         System.out.println(ProgramMessages.ENTER_PASSWORD);
-        System.out.print(ProgramMessages.TERMINAL_DOODLE);
-        return scanner.next();
     }
 
     public String enterPasswordMenu() {
+        System.out.print(ProgramMessages.TERMINAL_DOODLE);
         return scanner.nextLine().trim();
     }
 
@@ -111,7 +103,6 @@ public class Menu {
         System.out.println(ProgramMessages.FOLDER_UNLOCKED);
         System.out.println(ProgramMessages.TYPE_L_LOCK_FOLDER);
         while (true) {
-            System.out.println("\n");
             System.out.print(ProgramMessages.TERMINAL_DOODLE);
             String answer = scanner.next().toLowerCase();
             if (answer.equals("l")) {
@@ -138,10 +129,11 @@ public class Menu {
     }
 
     public void wrongPasswordMenu(int triesLeft) {
-        System.out.println("\n");
         System.out.println(ProgramMessages.WRONG_PASSWORD);
         System.out.println(ProgramMessages.triesLeft(triesLeft));
-        System.out.println("\n");
-        System.out.print(ProgramMessages.TERMINAL_DOODLE);
+    }
+
+    public void folderForcedLocked() {
+        System.out.println(ProgramMessages.FOLDER_LOCKED);
     }
 }

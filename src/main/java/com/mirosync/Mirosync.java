@@ -3,19 +3,16 @@ package com.mirosync;
 import com.mirosync.folder.FolderManager;
 import com.mirosync.graphic.Menu;
 import com.mirosync.password.PasswordHasher;
-import com.mirosync.password.PasswordManager;
 import com.mirosync.password.PasswordStorage;
 import com.mirosync.security.LockoutManager;
 import com.mirosync.validate.Validation;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 
 public class Mirosync {
 
     private FolderManager folderManager;
-    private PasswordManager passwordManager;
     private Validation validation;
     private LockoutManager lockoutManager;
     private PasswordHasher passwordHasher;
@@ -69,9 +66,9 @@ public class Mirosync {
 
                     if (!validation.isVaultOpen()) {
                         menu.enterPasswordMenuHeader();
-                        int tryLeft = 3;
-                        while (tryLeft != 0) {
-                            tryLeft--;
+                        int attempts = 3;
+                        while (attempts > 0) {
+
                             if (validation.passwordValidator(
                                     menu.enterPasswordMenu()
                             )) {
@@ -83,7 +80,8 @@ public class Mirosync {
                                 return;
                             }
 
-                            if (tryLeft == 0) {
+                            attempts--;
+                            if (attempts == 0) {
                                 clearTerminal();
                                 lockoutManager.lockOut();
                                 menu.lockedProgramMenu(
@@ -91,14 +89,17 @@ public class Mirosync {
                                 );
                                 return;
                             }
-                            menu.wrongPasswordMenu(tryLeft);
+
+                            menu.wrongPasswordMenu(attempts);
                         }
                         return;
                     }
                     else {
                         lock();
-                        return;
+                        menu.folderForcedLocked();
                     }
+
+                    return;
                 }
                 case 2 -> {
                     // TODO [Terminal Command]
@@ -110,7 +111,6 @@ public class Mirosync {
 
     // Core Builder
     private void instructionsInitializer() {
-        passwordManager = new PasswordManager();
         folderManager   = new FolderManager(null);
         passwordHasher  = new PasswordHasher();
         passwordStorage = new PasswordStorage();
@@ -139,8 +139,10 @@ public class Mirosync {
 
     // It manages the password; it first encrypts it and then saves it.
     public void handlePassword() {
-        String password                        = menu.firstBootMenuPassword();
-        PasswordHasher.HashResults hashResults = passwordHasher.generateHash(password);
+        String password = menu.firstBootMenuPassword();
+        PasswordHasher.HashResults hashResults
+                = passwordHasher.generateHash(password);
+        passwordStorage.save(hashResults);
     }
 
     // Clearing the terminal of previous commands
