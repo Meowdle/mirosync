@@ -9,7 +9,7 @@ A password-protected folder that hides itself when locked.
 - **Unexpected close:** detects if vault is still open on next launch
 
 ## Core Features
-- SHA-256 password hashing
+- PBKDF2 password hashing with salt (replaced SHA-256)
 - Hidden folder via Windows `attrib`
 - Password stored securely in `config.properties`
 - 3 retry attempts on wrong password
@@ -29,17 +29,26 @@ java -cp src/main/java com.mirosync.Main
 com.mirosync/
 ├── Mirosync.java   → core logic
 ├── folder/         → FolderManager.java
-├── password/       → PasswordManager.java
+├── password/       → PasswordHasher.java, PasswordStorage.java
 ├── validate/       → Validation.java
 ├── security/       → LockoutManager.java
 ├── graphic/        → Menu.java
 └── R/              → ProgramMessages.java
 ```
 
-## Roadmap
-- [ ] Mini CLI (`miro ~info:size`, `miro ~info:count`, ...)
-- [ ] Cross-platform support
 
+## Roadmap
+
+### Security & Stability
+- [ ] Encrypt `config.properties`
+- [ ] Migrate to encrypted vault (AES-256)
+- [ ] Secure config storage in `AppData`
+- [ ] Proper exception handling
+
+### Features
+- [ ] Mini CLI (`miro ~info:size`, `miro ~info:count`, ...)
+- [ ] Cross-platform support (Linux / macOS)
+- [ ] Multiple vault support
 
 ## Status
-> v0.3 — Lockout system and interactive menu complete.
+> v0.4 — PBKDF2 password hashing complete. Security hardening in progress.
