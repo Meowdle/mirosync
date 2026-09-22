@@ -2,7 +2,9 @@ package com.mirosync;
 
 import com.mirosync.folder.FolderManager;
 import com.mirosync.graphic.Menu;
+import com.mirosync.password.PasswordHasher;
 import com.mirosync.password.PasswordManager;
+import com.mirosync.password.PasswordStorage;
 import com.mirosync.security.LockoutManager;
 import com.mirosync.validate.Validation;
 
@@ -15,8 +17,10 @@ public class Mirosync {
     private FolderManager folderManager;
     private PasswordManager passwordManager;
     private Validation validation;
-    private Menu menu;
     private LockoutManager lockoutManager;
+    private PasswordHasher passwordHasher;
+    private PasswordStorage passwordStorage;
+    private Menu menu;
 
     public void start() {
 
@@ -107,10 +111,12 @@ public class Mirosync {
     // Core Builder
     private void instructionsInitializer() {
         passwordManager = new PasswordManager();
-        folderManager = new FolderManager(null);
-        validation = new Validation(passwordManager, folderManager);
-        menu = new Menu();
-        lockoutManager = new LockoutManager();
+        folderManager   = new FolderManager(null);
+        passwordHasher  = new PasswordHasher();
+        passwordStorage = new PasswordStorage();
+        validation      = new Validation(folderManager, passwordHasher, passwordStorage);
+        lockoutManager  = new LockoutManager();
+        menu            = new Menu();
     }
     // It checks whether the software is being run for the first time
     private boolean isFirstRun() {
@@ -126,18 +132,15 @@ public class Mirosync {
     // Start Menu – Option to create a folder at a selected location
     public void createFolderWithCostumePath(String path) {
         folderManager = new FolderManager(path);
-        validation = new Validation(passwordManager, folderManager);
+        validation    = new Validation(folderManager, passwordHasher, passwordStorage);
         folderManager.createFolder();
         folderManager.hideFolder();
     }
 
     // It manages the password; it first encrypts it and then saves it.
     public void handlePassword() {
-        passwordManager.savePassword(
-                passwordManager.hashPassword(
-                        menu.firstBootMenuPassword()
-                )
-        );
+        String password                        = menu.firstBootMenuPassword();
+        PasswordHasher.HashResults hashResults = passwordHasher.generateHash(password);
     }
 
     // Clearing the terminal of previous commands
@@ -158,5 +161,5 @@ public class Mirosync {
 
     // For quick management of file locking and unlocking
     private void unlock() {folderManager.showFolder();}
-    private void lock() {folderManager.hideFolder();}
+    private void lock()   {folderManager.hideFolder();}
 }
