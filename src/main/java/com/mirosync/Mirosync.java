@@ -126,7 +126,7 @@ public class Mirosync {
     // Start Menu – Option to create a folder with the root path
     public void createFolderWithOriginalPath() {
         folderManager.createFolder();
-        folderManager.hideFolder();
+        folderManager.lockFolder();
     }
 
     // Start Menu – Option to create a folder at a selected location
@@ -134,7 +134,7 @@ public class Mirosync {
         folderManager = new FolderManager(path);
         validation    = new Validation(folderManager, passwordHasher, passwordStorage);
         folderManager.createFolder();
-        folderManager.hideFolder();
+        folderManager.lockFolder();
     }
 
     // It manages the password; it first encrypts it and then saves it.
@@ -162,6 +162,6 @@ public class Mirosync {
     }
 
     // For quick management of file locking and unlocking
-    private void unlock() {folderManager.showFolder();}
-    private void lock()   {folderManager.hideFolder();}
+    private void unlock() {folderManager.unlockFolder();}
+    private void lock()   {folderManager.lockFolder();}
 }

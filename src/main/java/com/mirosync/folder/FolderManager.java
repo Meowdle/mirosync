@@ -15,6 +15,12 @@ public class FolderManager {
             ).toString();
     private final String pathAddress;
 
+    private final VaultCamouflage camouflage = new VaultCamouflage();
+
+    private String getVaultPath() {
+        return pathAddress + "/" + camouflage.getCamouflagedName();
+    }
+
     // Constructor for managing the selected file-saving path
     public FolderManager(String pathAddress) {
         // If a preferred address is not provided, use the default
@@ -27,7 +33,7 @@ public class FolderManager {
 
     public void createFolder() {
         // Path for creating a folder
-        Path path = Paths.get(pathAddress);
+        Path path = Paths.get(getVaultPath());
         try {
 
             // Handling duplicate addresses during file creation
@@ -46,31 +52,20 @@ public class FolderManager {
         }
     }
 
-    public void hideFolder() {
-        try {
-            Process process = new ProcessBuilder(
-                    "attrib", "+h", pathAddress
-            ).start();
-            process.waitFor();
-        }
-        catch (InterruptedException | IOException e) {
-            throw new RuntimeException(e);
-        }
+    public void lockFolder() {
+        camouflage.applySystemAttributes(getVaultPath());
     }
-    public void showFolder() {
-        try {
-            Process process = new ProcessBuilder(
-                    "attrib", "-h", pathAddress
-            ).inheritIO().start();
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public void unlockFolder() {
+        camouflage.removeSystemAttributes(getVaultPath());
     }
 
     public boolean isVisible() throws IOException {
+        Path path = Path.of(getVaultPath());
+
+        if (!Files.exists(path)) return false;
+
         return !(boolean) Files.getAttribute(
-                Path.of(pathAddress), "dos:hidden"
+                path, "dos:hidden"
         );
     }
 }
