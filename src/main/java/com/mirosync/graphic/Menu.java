@@ -57,10 +57,7 @@ public class Menu {
         System.out.println(ProgramMessages.TITLE);
         System.out.println("\n");
         System.out.println(ProgramMessages.FIRST_RUN_TITLE);
-        System.out.println("\n");
         System.out.println(ProgramMessages.FIRST_RUN_CREATE_PASSWORD);
-        System.out.println("\n");
-        System.out.print(ProgramMessages.TERMINAL_DOODLE);
     }
 
     public int defaultMenu(boolean isFolderOpen) {

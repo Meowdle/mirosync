@@ -37,10 +37,11 @@ public class FolderManager {
         try {
 
             // Handling duplicate addresses during file creation
-            if (Files.exists(path))
-                throw new FileAlreadyExistsException("error");
-
-            Files.createDirectory(path);
+            if (Files.exists(path)) {
+                System.err.println("Folder already exists.");
+                return;
+            }
+            Files.createDirectories(path);
         }
         // Errors while creating folder
         catch (FileAlreadyExistsException e) {
