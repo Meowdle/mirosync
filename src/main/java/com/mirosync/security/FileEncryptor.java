@@ -59,7 +59,7 @@ public class FileEncryptor {
 
             byte[] allBytes = Files.readAllBytes(inputFile);
             byte[] iv = Arrays.copyOfRange(allBytes, 0, 16);
-            byte[] encrypted = Arrays.copyOfRange(allBytes, 0, allBytes.length);
+            byte[] encrypted = Arrays.copyOfRange(allBytes, 16, allBytes.length);
 
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv));
