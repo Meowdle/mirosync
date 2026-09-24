@@ -17,7 +17,7 @@ public class FolderManager {
 
     private final VaultCamouflage camouflage = new VaultCamouflage();
 
-    private String getVaultPath() {
+    public String getVaultPath() {
         return pathAddress + "/" + camouflage.getCamouflagedName();
     }
 
