@@ -49,7 +49,6 @@ public class Menu {
 
     public String firstBootMenuPassword() {
         firstBootMenuContextPassword();
-        System.out.println("\n");
         System.out.print(ProgramMessages.TERMINAL_DOODLE);
         return scanner.next();
     }
@@ -59,8 +58,6 @@ public class Menu {
         System.out.println(ProgramMessages.FIRST_RUN_TITLE);
         System.out.println("\n");
         System.out.println(ProgramMessages.FIRST_RUN_CREATE_PASSWORD);
-        System.out.println("\n");
-        System.out.print(ProgramMessages.TERMINAL_DOODLE);
     }
 
     public int defaultMenu(boolean isFolderOpen) {

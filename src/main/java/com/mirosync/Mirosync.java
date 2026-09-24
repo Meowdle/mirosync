@@ -4,11 +4,15 @@ import com.mirosync.folder.FolderManager;
 import com.mirosync.graphic.Menu;
 import com.mirosync.password.PasswordHasher;
 import com.mirosync.password.PasswordStorage;
+import com.mirosync.security.FileEncryptor;
+import com.mirosync.security.KeyDerivation;
 import com.mirosync.security.LockoutManager;
 import com.mirosync.validate.Validation;
 
+import javax.crypto.SecretKey;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 public class Mirosync {
 
@@ -17,6 +21,8 @@ public class Mirosync {
     private LockoutManager lockoutManager;
     private PasswordHasher passwordHasher;
     private PasswordStorage passwordStorage;
+    private FileEncryptor fileEncryptor;
+    private KeyDerivation keyDerivation;
     private Menu menu;
 
     public void start() {
@@ -69,14 +75,16 @@ public class Mirosync {
                         int attempts = 3;
                         while (attempts > 0) {
 
-                            if (validation.passwordValidator(
-                                    menu.enterPasswordMenu()
-                            )) {
-                                unlock();
+                            String password = menu.enterPasswordMenu();
+
+                            if (validation.passwordValidator(password)) {
+
+                                unlock(password);
                                 if (menu.afterOpeningFolderMenu().equals("l")) {
                                     clearTerminal();
-                                    lock();
+                                    lock(password);
                                 }
+
                                 return;
                             }
 
@@ -95,8 +103,12 @@ public class Mirosync {
                         return;
                     }
                     else {
-                        lock();
-                        menu.folderForcedLocked();
+                        menu.enterPasswordMenuHeader();
+
+                        String password = menu.enterPasswordMenu();
+
+                        if (validation.passwordValidator(password))
+                            lock(password);
                     }
 
                     return;
@@ -116,6 +128,8 @@ public class Mirosync {
         passwordStorage = new PasswordStorage();
         validation      = new Validation(folderManager, passwordHasher, passwordStorage);
         lockoutManager  = new LockoutManager();
+        fileEncryptor   = new FileEncryptor();
+        keyDerivation   = new KeyDerivation();
         menu            = new Menu();
     }
     // It checks whether the software is being run for the first time
@@ -126,7 +140,7 @@ public class Mirosync {
     // Start Menu – Option to create a folder with the root path
     public void createFolderWithOriginalPath() {
         folderManager.createFolder();
-        folderManager.hideFolder();
+        folderManager.lockFolder();
     }
 
     // Start Menu – Option to create a folder at a selected location
@@ -134,7 +148,7 @@ public class Mirosync {
         folderManager = new FolderManager(path);
         validation    = new Validation(folderManager, passwordHasher, passwordStorage);
         folderManager.createFolder();
-        folderManager.hideFolder();
+        folderManager.lockFolder();
     }
 
     // It manages the password; it first encrypts it and then saves it.
@@ -162,6 +176,26 @@ public class Mirosync {
     }
 
     // For quick management of file locking and unlocking
-    private void unlock() {folderManager.showFolder();}
-    private void lock()   {folderManager.hideFolder();}
+    private void unlock(String password) {
+        byte[] salt = passwordStorage.loadSalt();
+        SecretKey key = keyDerivation.deriveKey(password, salt);
+        try {
+            fileEncryptor.decryptAll(Path.of(folderManager.getVaultPath()), key);
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        folderManager.unlockFolder();
+    }
+    private void lock(String password)   {
+        byte[] salt = passwordStorage.loadSalt();
+        SecretKey key = keyDerivation.deriveKey(password, salt);
+        try {
+            fileEncryptor.encryptAll(Path.of(folderManager.getVaultPath()), key);
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        folderManager.lockFolder();
+    }
 }
