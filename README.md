@@ -9,9 +9,9 @@ A password-protected folder that hides itself when locked.
 - **Unexpected close:** detects if vault is still open on next launch
 
 ## Core Features
-- PBKDF2 password hashing with salt (replaced SHA-256)
-- Hidden folder via Windows `attrib`
-- Password stored securely in `config.properties`
+- PBKDF2 password hashing with salt
+- AES-256 file encryption on lock/unlock
+- Vault camouflage via `attrib +h +s` (hidden + system)
 - 3 retry attempts on wrong password
 - 15-minute lockout after 3 failed attempts
 - Detects unlocked vault on startup
@@ -31,7 +31,7 @@ com.mirosync/
 ├── folder/         → FolderManager.java
 ├── password/       → PasswordHasher.java, PasswordStorage.java
 ├── validate/       → Validation.java
-├── security/       → LockoutManager.java
+├── security/       → FileEncryptor.java, KeyDerivation.java, LockoutManager.java
 ├── graphic/        → Menu.java
 └── R/              → ProgramMessages.java
 ```
@@ -40,8 +40,9 @@ com.mirosync/
 ## Roadmap
 
 ### Security & Stability
-- [ ] Encrypt `config.properties`
-- [ ] Migrate to encrypted vault (AES-256)
+- [x] PBKDF2 password hashing
+- [x] AES-256 file encryption
+- [x] Vault camouflage
 - [ ] Secure config storage in `AppData`
 - [ ] Proper exception handling
 
@@ -51,4 +52,4 @@ com.mirosync/
 - [ ] Multiple vault support
 
 ## Status
-> v0.4 — PBKDF2 password hashing complete. Security hardening in progress.
+> v0.5 — AES-256 encryption and vault camouflage complete.
