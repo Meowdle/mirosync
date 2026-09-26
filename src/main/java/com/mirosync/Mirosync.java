@@ -25,6 +25,7 @@ public class Mirosync {
     private FileEncryptor fileEncryptor;
     private KeyDerivation keyDerivation;
     private Menu menu;
+    private String sessionPassword;
 
     public void start() {
 
@@ -79,7 +80,7 @@ public class Mirosync {
                             String password = menu.enterPasswordMenu();
 
                             if (validation.passwordValidator(password)) {
-
+                                sessionPassword = password;
                                 unlock(password);
                                 if (menu.afterOpeningFolderMenu().equals("l")) {
                                     clearTerminal();
@@ -102,15 +103,20 @@ public class Mirosync {
                         return;
                     }
                     else {
-                        menu.enterPasswordMenuHeader();
-
-                        String password = menu.enterPasswordMenu();
-
-                        if (validation.passwordValidator(password))
-                            lock(password);
+                        if (sessionPassword == null) {
+                            menu.enterPasswordMenuHeader();
+                            String password = menu.enterPasswordMenu();
+                            if (validation.passwordValidator(password)) {
+                                sessionPassword = password;
+                                lock(sessionPassword);
+                            } else {
+                                menu.wrongPasswordMenu(0);
+                            }
+                        } else {
+                            lock(sessionPassword);
+                        }
+                        return;
                     }
-
-                    return;
                 }
                 case 2 -> {
                     // TODO [Terminal Command]
@@ -186,7 +192,7 @@ public class Mirosync {
         }
         folderManager.unlockFolder();
     }
-    private void lock(String password)   {
+    private void lock(String password) {
         byte[] salt = passwordStorage.loadSalt();
         SecretKey key = keyDerivation.deriveKey(password, salt);
         try {
