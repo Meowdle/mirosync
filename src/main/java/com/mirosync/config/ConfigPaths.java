@@ -26,7 +26,7 @@ public final class ConfigPaths {
             Files.createDirectories(BASE_DIR);
         }
         catch (IOException e) {
-            throw new VaultException("Failed to create config directory");
+            throw new VaultException("Failed to create config directory", e);
         }
     }
 }
