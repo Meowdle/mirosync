@@ -2,6 +2,7 @@ package com.mirosync.security;
 
 import com.mirosync.config.ConfigPaths;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Properties;
@@ -15,13 +16,23 @@ public class LockoutManager {
 
         // get the 'key' value form property
         String value = load().getProperty(LOCKOUT_KEY);
-
         // checks if the kay value is null or file has not been created
         // all these means the file is not locked
         if (value == null) return false;
 
-        return System.currentTimeMillis()   // ms time passed
-                < Long.parseLong(value);    // convert string to long format
+        try {
+            long lockUntil = Long.parseLong(value);
+            return System.currentTimeMillis()   // ms time passed
+                    < lockUntil;                // convert string to long format
+        }
+        catch (NumberFormatException e) {
+            reset();
+            return false;
+        }
+    }
+
+    public void reset() {
+        new File(ConfigPaths.LOCKOUT_FILE).delete();
     }
 
     public void lockOut() {
@@ -58,9 +69,15 @@ public class LockoutManager {
     }
 
     public long remainingTimeToUnlock() {
-        String value = load().getProperty("lockout_until");
+        String value = load().getProperty(LOCKOUT_KEY);
         if (value == null) return 0;
-        long remaining = Long.parseLong(value) - System.currentTimeMillis();
-        return remaining / 1000 / 60;
+        try {
+            long remaining = Long.parseLong(value) - System.currentTimeMillis();
+            return remaining / 1000 / 60;
+        }
+        catch (NumberFormatException e) {
+            reset();
+            return 0;
+        }
     }
 }
