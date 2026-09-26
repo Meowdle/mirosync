@@ -1,5 +1,6 @@
 package com.mirosync;
 
+import com.mirosync.config.ConfigPaths;
 import com.mirosync.folder.FolderManager;
 import com.mirosync.graphic.Menu;
 import com.mirosync.password.PasswordHasher;
@@ -95,9 +96,7 @@ public class Mirosync {
                                 menu.lockedProgramMenu(
                                         lockoutManager.remainingTimeToUnlock()
                                 );
-                                return;
                             }
-
                             menu.wrongPasswordMenu(attempts);
                         }
                         return;
@@ -134,7 +133,7 @@ public class Mirosync {
     }
     // It checks whether the software is being run for the first time
     private boolean isFirstRun() {
-        return !new File("config.properties").exists();
+        return !new File(ConfigPaths.CONFIG_FILE).exists();
     }
 
     // Start Menu – Option to create a folder with the root path

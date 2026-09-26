@@ -1,5 +1,8 @@
 package com.mirosync.password;
 
+import com.mirosync.config.ConfigPaths;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,7 +11,8 @@ import java.util.Properties;
 
 public class PasswordStorage {
 
-    public void save(PasswordHasher.HashResults results) {
+    public void save(PasswordHasher.@NotNull HashResults results) {
+        ConfigPaths.ensureDirectoryExists();
         String hash = Base64
                 .getEncoder()
                 .encodeToString(results.hash());
@@ -21,7 +25,7 @@ public class PasswordStorage {
         properties.setProperty("password_salt", salt);
 
         try (FileOutputStream fileOutputStream =
-                new FileOutputStream("config.properties")) {
+                new FileOutputStream(ConfigPaths.CONFIG_FILE)) {
             properties.store(fileOutputStream, null);
         }
         catch (IOException e) {
@@ -29,10 +33,10 @@ public class PasswordStorage {
         }
     }
 
-    private Properties loadProperties() {
+    private @NotNull Properties loadProperties() {
         Properties properties = new Properties();
         try (FileInputStream fileInputStream =
-                     new FileInputStream("config.properties")) {
+                     new FileInputStream(ConfigPaths.CONFIG_FILE)) {
             properties.load(fileInputStream);
         }
         catch (IOException e) {

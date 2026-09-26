@@ -1,5 +1,7 @@
 package com.mirosync.security;
 
+import com.mirosync.config.ConfigPaths;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Properties;
@@ -7,7 +9,6 @@ import java.util.Properties;
 public class LockoutManager {
 
     private final Properties properties = new Properties();
-    private static final String LOCKOUT_FILE = "lockout.properties";
     private static final String LOCKOUT_KEY = "lockout_until";
 
     public boolean isLocked() {
@@ -37,7 +38,7 @@ public class LockoutManager {
     private Properties load() {
         // opens a file stream for reading a file
         try (FileInputStream fileInputStream
-                     = new FileInputStream(LOCKOUT_FILE)) { // close stream after
+                     = new FileInputStream(ConfigPaths.LOCKOUT_FILE)) { // close stream after
             properties.load(fileInputStream);
         } // ignore the exception
         catch (Exception _) {}
@@ -47,7 +48,7 @@ public class LockoutManager {
     private void save() {
         // opens a file stream for writing on files
         try (FileOutputStream fileOutputStream
-                    = new FileOutputStream(LOCKOUT_FILE)) { // close stream after
+                    = new FileOutputStream(ConfigPaths.LOCKOUT_FILE)) { // close stream after
             // store the information
             properties.store(fileOutputStream, null);
         } // if it didn't save
