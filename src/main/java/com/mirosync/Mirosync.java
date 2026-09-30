@@ -1,206 +1,151 @@
 package com.mirosync;
 
+import com.mirosync.auth.AuthService;
+import com.mirosync.auth.LockoutService;
 import com.mirosync.config.ConfigPaths;
+import com.mirosync.crypto.Pbkdf2PasswordHasher;
+import com.mirosync.exception.AuthException;
+import com.mirosync.exception.CryptoException;
+import com.mirosync.exception.MirosyncException;
+import com.mirosync.exception.VaultException;
 import com.mirosync.folder.FolderManager;
 import com.mirosync.graphic.Menu;
-import com.mirosync.password.PasswordHasher;
-import com.mirosync.password.PasswordStorage;
 import com.mirosync.security.FileEncryptor;
 import com.mirosync.security.KeyDerivation;
-import com.mirosync.security.LockoutManager;
-import com.mirosync.validate.Validation;
+import com.mirosync.storage.ConfigStorage;
+import com.mirosync.storage.LockoutStorage;
+import com.mirosync.vault.Vault;
+import com.mirosync.vault.VaultCamouflage;
+import com.mirosync.vault.VaultSession;
+import com.mirosync.vault.VaultState;
 
-import javax.crypto.SecretKey;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
 public class Mirosync {
+    private final Vault vault;
+    private final AuthService authService;
+    private final LockoutService lockoutService;
+    private final VaultSession session;
+    private final Menu menu;
 
-    private FolderManager folderManager;
-    private Validation validation;
-    private LockoutManager lockoutManager;
-    private PasswordHasher passwordHasher;
-    private PasswordStorage passwordStorage;
-    private FileEncryptor fileEncryptor;
-    private KeyDerivation keyDerivation;
-    private Menu menu;
-    private String sessionPassword;
+    public Mirosync(Path vaultBasePath) throws MirosyncException {
+        try {
+            ConfigPaths.ensureDirectoryExists();
 
-    public void start() {
+            ConfigStorage  configStorage  = new ConfigStorage();
+            LockoutStorage lockoutStorage = new LockoutStorage();
 
-        // Refer to the terminal cleaning step from the previous instructions
+            Pbkdf2PasswordHasher hasher  = new Pbkdf2PasswordHasher();
+            KeyDerivation keyDerivation  = new KeyDerivation();
+            FileEncryptor fileEncryptor  = new FileEncryptor();
+
+            this.authService    = new AuthService(hasher, configStorage);
+            this.lockoutService = new LockoutService(lockoutStorage);
+
+            VaultCamouflage camouflage = new VaultCamouflage();
+            FolderManager folderManager = new FolderManager(vaultBasePath, camouflage);
+
+            this.vault   = new Vault(folderManager, fileEncryptor, keyDerivation, authService);
+            this.session = new VaultSession();
+            this.menu    = new Menu();
+
+        } catch (CryptoException | VaultException e) {
+            throw new MirosyncException("Failed to initialize Mirosync", e);
+        }
+    }
+
+    public void start() throws MirosyncException {
         clearTerminal();
+        if (isFirstRun()) setup();
+        else run();
+    }
 
-        // Reference to the core constructor
-        instructionsInitializer();
-
-        // If the software is launching for the first time, the condition is triggered
-        if (isFirstRun()) {
-            firstBootMenuPathHandler();
-            handlePassword();
-        }
-        else {
-            defaultMenu();
+    private void setup() throws MirosyncException {
+        try {
+            Path customPath = menu.askVaultPath();
+            if (customPath != null) {
+                // reinitialize with custom path
+            }
+            vault.initialize();
+            char[] password = menu.askNewPassword();
+            authService.savePassword(password);
+            session.clear();
+        } catch (VaultException | AuthException e) {
+            throw new MirosyncException("Setup failed", e);
         }
     }
 
-    public void firstBootMenuPathHandler() {
-        switch (menu.firstBootMenuPath()) {
-            case 1 -> createFolderWithOriginalPath();
-            case 2 -> createFolderWithCostumePath(
-                    menu.firstBootMenuCustomPath()
-            );
+    private void run() throws MirosyncException {
+        try {
+            if (lockoutService.isLocked()) {
+                menu.showLocked(lockoutService.remainingMinutes());
+                return;
+            }
+            handleMenu();
+        } catch (AuthException e) {
+            throw new MirosyncException("Auth error", e);
         }
     }
 
-    public void defaultMenu() {
-        if (lockoutManager.isLocked()) {
-            clearTerminal();
-            menu.lockedProgramMenu(
-                    lockoutManager.remainingTimeToUnlock()
-            );
-            return;
+    private void handleMenu() throws MirosyncException {
+        try {
+            VaultState state = vault.getState();
+            int choice = menu.showMain(state == VaultState.UNLOCKED);
+
+            switch (choice) {
+                case 1 -> handleVaultToggle(state);
+                case 2 -> { /* TODO: CLI */ }
+            }
+        } catch (VaultException e) {
+            throw new MirosyncException("Vault error", e);
         }
-        while (true) {
+    }
 
-            switch (
-                    menu.defaultMenu(
-                            validation.isVaultOpen()
-                    )
-            ) {
-                case 1 -> {
-                    clearTerminal();
+    private void handleVaultToggle(VaultState state) throws MirosyncException {
+        try {
+            if (state == VaultState.UNLOCKED) {
+                char[] password = session.hasPassword()
+                        ? session.getPassword()
+                        : menu.askPassword();
+                vault.lock(password);
+                session.clear();
+                return;
+            }
 
-                    if (!validation.isVaultOpen()) {
-                        menu.enterPasswordMenuHeader();
-                        int attempts = 3;
-                        while (attempts > 0) {
-
-                            String password = menu.enterPasswordMenu();
-
-                            if (validation.passwordValidator(password)) {
-                                sessionPassword = password;
-                                unlock(password);
-                                if (menu.afterOpeningFolderMenu().equals("l")) {
-                                    clearTerminal();
-                                    lock(password);
-                                }
-
-                                return;
-                            }
-
-                            attempts--;
-                            if (attempts == 0) {
-                                clearTerminal();
-                                lockoutManager.lockOut();
-                                menu.lockedProgramMenu(
-                                        lockoutManager.remainingTimeToUnlock()
-                                );
-                            }
-                            menu.wrongPasswordMenu(attempts);
-                        }
-                        return;
-                    }
-                    else {
-                        if (sessionPassword == null) {
-                            menu.enterPasswordMenuHeader();
-                            String password = menu.enterPasswordMenu();
-                            if (validation.passwordValidator(password)) {
-                                sessionPassword = password;
-                                lock(sessionPassword);
-                            } else {
-                                menu.wrongPasswordMenu(0);
-                            }
-                        } else {
-                            lock(sessionPassword);
-                        }
-                        return;
-                    }
-                }
-                case 2 -> {
-                    // TODO [Terminal Command]
+            int attempts = 3;
+            while (attempts > 0) {
+                char[] password = menu.askPassword();
+                if (authService.verify(password)) {
+                    session.setPassword(password);
+                    vault.unlock(password);
+                    menu.showUnlocked();
+                    char[] p = session.getPassword();
+                    vault.lock(p);
+                    session.clear();
                     return;
                 }
+                attempts--;
+                if (attempts == 0) {
+                    lockoutService.lockOut();
+                    menu.showLocked(lockoutService.remainingMinutes());
+                    return;
+                }
+                menu.showWrongPassword(attempts);
             }
+        } catch (VaultException | AuthException e) {
+            throw new MirosyncException("Toggle failed", e);
         }
     }
 
-    // Core Builder
-    private void instructionsInitializer() {
-        folderManager   = new FolderManager(null);
-        passwordHasher  = new PasswordHasher();
-        passwordStorage = new PasswordStorage();
-        validation      = new Validation(folderManager, passwordHasher, passwordStorage);
-        lockoutManager  = new LockoutManager();
-        fileEncryptor   = new FileEncryptor();
-        keyDerivation   = new KeyDerivation();
-        menu            = new Menu();
-    }
-    // It checks whether the software is being run for the first time
     private boolean isFirstRun() {
-        return !new File(ConfigPaths.CONFIG_FILE).exists();
+        return !ConfigPaths.CONFIG_FILE.toFile().exists();
     }
 
-    // Start Menu – Option to create a folder with the root path
-    public void createFolderWithOriginalPath() {
-        folderManager.createFolder();
-        folderManager.lockFolder();
-    }
-
-    // Start Menu – Option to create a folder at a selected location
-    public void createFolderWithCostumePath(String path) {
-        folderManager = new FolderManager(path);
-        validation    = new Validation(folderManager, passwordHasher, passwordStorage);
-        folderManager.createFolder();
-        folderManager.lockFolder();
-    }
-
-    // It manages the password; it first encrypts it and then saves it.
-    public void handlePassword() {
-        String password = menu.firstBootMenuPassword();
-        PasswordHasher.HashResults hashResults
-                = passwordHasher.generateHash(password);
-        passwordStorage.save(hashResults);
-    }
-
-    // Clearing the terminal of previous commands
-    public void clearTerminal() {
+    private void clearTerminal() {
         try {
-            /*
-             * "cmd"  -> open window terminal
-             * "/c"   -> do this prompt, then close
-             * "cls"  -> clear screen for windows
-             */
             new ProcessBuilder("cmd", "/c", "cls")
-                    .inheritIO()    // Use the operational terminal
-                    .start()        // Start the process (cls starts running)
-                    .waitFor();     // Wait till 'cls' command processing is finished
-        } // ignoring the exception
-        catch (InterruptedException | IOException _) {}
-    }
-
-    // For quick management of file locking and unlocking
-    private void unlock(String password) {
-        byte[] salt = passwordStorage.loadSalt();
-        SecretKey key = keyDerivation.deriveKey(password, salt);
-        try {
-            fileEncryptor.decryptAll(Path.of(folderManager.getVaultPath()), key);
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        folderManager.unlockFolder();
-    }
-    private void lock(String password) {
-        byte[] salt = passwordStorage.loadSalt();
-        SecretKey key = keyDerivation.deriveKey(password, salt);
-        try {
-            fileEncryptor.encryptAll(Path.of(folderManager.getVaultPath()), key);
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        folderManager.lockFolder();
+                    .inheritIO().start().waitFor();
+        } catch (IOException | InterruptedException ignored) {}
     }
 }
