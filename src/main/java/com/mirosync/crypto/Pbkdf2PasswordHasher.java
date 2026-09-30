@@ -44,7 +44,8 @@ public final class Pbkdf2PasswordHasher implements PasswordHasher {
     }
 
     private byte[] derive(char[] password, byte[] salt) throws CryptoException {
-        PBEKeySpec spec = new PBEKeySpec(password, salt, ITERATIONS, KEY_LENGTH);
+        char[] passwordCopy = Arrays.copyOf(password, password.length);
+        PBEKeySpec spec = new PBEKeySpec(passwordCopy, salt, ITERATIONS, KEY_LENGTH);
         try {
             return factory.generateSecret(spec).getEncoded();
         }
@@ -53,7 +54,7 @@ public final class Pbkdf2PasswordHasher implements PasswordHasher {
         }
         finally {
             spec.clearPassword();
-            Arrays.fill(password, '\0');
+            Arrays.fill(passwordCopy, '\0');
         }
     }
 }

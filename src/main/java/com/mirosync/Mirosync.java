@@ -64,17 +64,22 @@ public class Mirosync {
     }
 
     private void setup() throws MirosyncException {
+        char[] password = null;
         try {
             Path customPath = menu.askVaultPath();
             if (customPath != null) {
                 // TODO reinitialize with custom path
             }
             vault.initialize();
-            char[] password = menu.askNewPassword();
+            password = menu.askNewPassword();
             authService.savePassword(password);
             session.clear();
         } catch (VaultException | AuthException e) {
             throw new MirosyncException("Setup failed", e);
+        } finally {
+            if (password != null) {
+                Arrays.fill(password, '\0');
+            }
         }
     }
 
@@ -111,15 +116,22 @@ public class Mirosync {
                     menu.showPasswordHeader();
                     while (true) {
                         char[] password = menu.askPassword();
-                        if (authService.verify(password)) {
-                            session.setPassword(
-                                    Arrays.copyOf(password, password.length)
-                            );
-                            break;
+                        try {
+                            if (authService.verify(password)) {
+                                session.setPassword(password);
+                                break;
+                            }
+                        } finally {
+                            Arrays.fill(password, '\0');
                         }
                     }
                 }
-                vault.lock(session.getPassword());
+                char[] password = session.getPassword();
+                try {
+                    vault.lock(password);
+                } finally {
+                    Arrays.fill(password, '\0');
+                }
                 session.clear();
                 menu.showFolderLocked();
                 return;
@@ -129,15 +141,28 @@ public class Mirosync {
             menu.showPasswordHeader();
             while (attempts > 0) {
                 char[] password = menu.askPassword();
-                if (authService.verify(password)) {
-                    session.setPassword(password);
-                    vault.unlock(password);
-                    menu.showUnlocked();
-                    char[] p = session.getPassword();
-                    vault.lock(p);
-                    session.clear();
-                    menu.showFolderLocked();
-                    return;
+                try {
+                    if (authService.verify(password)) {
+                        session.setPassword(password);
+                        char[] sessionPassword = session.getPassword();
+                        try {
+                            vault.unlock(sessionPassword);
+                        } finally {
+                            Arrays.fill(sessionPassword, '\0');
+                        }
+                        menu.showUnlocked();
+                        char[] passwordForLock = session.getPassword();
+                        try {
+                            vault.lock(passwordForLock);
+                        } finally {
+                            Arrays.fill(passwordForLock, '\0');
+                        }
+                        session.clear();
+                        menu.showFolderLocked();
+                        return;
+                    }
+                } finally {
+                    Arrays.fill(password, '\0');
                 }
                 attempts--;
                 if (attempts == 0) {
