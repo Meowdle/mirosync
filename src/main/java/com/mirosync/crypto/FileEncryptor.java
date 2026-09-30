@@ -17,6 +17,7 @@ import java.nio.file.StandardCopyOption;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.List;
 
 public final class FileEncryptor {
     private static final String ALGORITHM = "AES/GCM/NoPadding";
@@ -100,44 +101,40 @@ public final class FileEncryptor {
     }
 
     public void encryptAll(Path folder, SecretKey key) throws CryptoException {
-        try (var files = Files.walk(folder)) {
-            files.filter(Files::isRegularFile)
-                    .filter(p -> !p.toString().endsWith(".enc"))
-                    .forEach(file -> {
-                        try {
-                            encrypt(file, key);
-                        }
-                        catch (CryptoException e) {
-                            throw new EncryptionRuntimeException(e);
-                        }
-                    });
+        try {
+            List<Path> files;
+            try (var stream = Files.walk(folder)) {
+                files = stream
+                        .filter(Files::isRegularFile)
+                        .filter(p -> !p.toString().endsWith(".enc"))
+                        .toList();
+            }
+
+            for (Path file : files) {
+                encrypt(file, key);
+            }
         }
         catch (IOException e) {
             throw new CryptoException("Failed to walk folder: " + folder, e);
-        }
-        catch (EncryptionRuntimeException e) {
-            throw e.cause;
         }
     }
 
     public void decryptAll(Path folder, SecretKey key) throws CryptoException {
-        try (var files = Files.walk(folder)) {
-            files.filter(Files::isRegularFile)
-                    .filter(p -> p.toString().endsWith(".enc"))
-                    .forEach(file -> {
-                        try {
-                            decrypt(file, key);
-                        }
-                        catch (CryptoException e) {
-                            throw new EncryptionRuntimeException(e);
-                        }
-                    });
+        try {
+            List<Path> files;
+            try (var stream = Files.walk(folder)) {
+                files = stream
+                        .filter(Files::isRegularFile)
+                        .filter(p -> p.toString().endsWith(".enc"))
+                        .toList();
+            }
+
+            for (Path file : files) {
+                decrypt(file, key);
+            }
         }
         catch (IOException e) {
             throw new CryptoException("Failed to walk folder: " + folder, e);
-        }
-        catch (EncryptionRuntimeException e) {
-            throw e.cause;
         }
     }
 
@@ -201,14 +198,6 @@ public final class FileEncryptor {
         }
         catch (IOException ignored) {
             // Best-effort cleanup; the original/target file is left untouched.
-        }
-    }
-
-    private static final class EncryptionRuntimeException extends RuntimeException {
-        private final CryptoException cause;
-
-        private EncryptionRuntimeException(CryptoException cause) {
-            this.cause = cause;
         }
     }
 }
