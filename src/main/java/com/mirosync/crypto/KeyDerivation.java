@@ -27,7 +27,8 @@ public final class KeyDerivation {
     }
 
     public SecretKey derive(char[] password, byte[] salt) throws CryptoException {
-        PBEKeySpec spec = new PBEKeySpec(password, salt, ITERATIONS, KEY_LENGTH);
+        char[] passwordCopy = Arrays.copyOf(password, password.length);
+        PBEKeySpec spec = new PBEKeySpec(passwordCopy, salt, ITERATIONS, KEY_LENGTH);
         try {
             byte[] keyBytes = factory.generateSecret(spec).getEncoded();
             return new SecretKeySpec(keyBytes, "AES");
@@ -37,7 +38,7 @@ public final class KeyDerivation {
         }
         finally {
             spec.clearPassword();
-            Arrays.fill(password, '\0');
+            Arrays.fill(passwordCopy, '\0');
         }
     }
 }
