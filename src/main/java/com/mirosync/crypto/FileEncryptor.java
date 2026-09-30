@@ -63,7 +63,7 @@ public final class FileEncryptor {
 
     public void decrypt(Path input, SecretKey key) throws CryptoException {
         if (!input.toString().endsWith(".enc")) {
-            throw new CryptoException("Encrypted file must end with .enc: " + input);
+            throw new CryptoException("Encrypted file must end with .enc: " + input, new Exception());
         }
 
         Path output = Path.of(input.toString().substring(0, input.toString().length() - 4));
@@ -155,16 +155,16 @@ public final class FileEncryptor {
 
     private void validateHeader(byte[] header) throws CryptoException {
         if (header.length != MAGIC.length + 1 + NONCE_SIZE) {
-            throw new CryptoException("Invalid encrypted file header");
+            throw new CryptoException("Invalid encrypted file header", new Exception());
         }
 
         if (!Arrays.equals(MAGIC, Arrays.copyOf(header, MAGIC.length))) {
-            throw new CryptoException("Invalid encrypted file magic");
+            throw new CryptoException("Invalid encrypted file magic",  new Exception());
         }
 
         if (header[MAGIC.length] != FORMAT_VERSION) {
             throw new CryptoException("Unsupported encrypted file version: "
-                    + header[MAGIC.length]);
+                    + header[MAGIC.length],  new Exception());
         }
     }
 
