@@ -1,9 +1,7 @@
 package com.mirosync.config;
 
 import com.mirosync.exception.VaultException;
-import com.mirosync.folder.FolderManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

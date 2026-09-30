@@ -61,7 +61,6 @@ public final class Menu {
     public void showWrongPassword(int attemptsLeft) {
         System.out.println(ProgramMessages.WRONG_PASSWORD);
         System.out.println(ProgramMessages.triesLeft(attemptsLeft));
-        System.out.print(ProgramMessages.TERMINAL_DOODLE);
     }
 
     private void showVaultPathMenu() {
@@ -71,6 +70,16 @@ public final class Menu {
         System.out.println(ProgramMessages.FIRST_RUN_ORIGINAL_PATH);
         System.out.println(ProgramMessages.FIRST_RUN_COSTUME_PATH);
         System.out.print(ProgramMessages.TERMINAL_DOODLE);
+    }
+
+    public void showFolderLocked() {
+        System.out.println(ProgramMessages.FOLDER_LOCKED);
+    }
+
+    public void showPasswordHeader() {
+        System.out.println(ProgramMessages.TITLE);
+        System.out.println("\n");
+        System.out.println(ProgramMessages.ENTER_PASSWORD);
     }
 
     private int readInt() {

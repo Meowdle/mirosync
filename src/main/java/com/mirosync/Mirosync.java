@@ -20,7 +20,9 @@ import com.mirosync.vault.VaultSession;
 import com.mirosync.vault.VaultState;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 public class Mirosync {
     private final Vault vault;
@@ -65,7 +67,7 @@ public class Mirosync {
         try {
             Path customPath = menu.askVaultPath();
             if (customPath != null) {
-                // reinitialize with custom path
+                // TODO reinitialize with custom path
             }
             vault.initialize();
             char[] password = menu.askNewPassword();
@@ -105,15 +107,26 @@ public class Mirosync {
     private void handleVaultToggle(VaultState state) throws MirosyncException {
         try {
             if (state == VaultState.UNLOCKED) {
-                char[] password = session.hasPassword()
-                        ? session.getPassword()
-                        : menu.askPassword();
-                vault.lock(password);
+                if (!session.hasPassword()) {
+                    menu.showPasswordHeader();
+                    while (true) {
+                        char[] password = menu.askPassword();
+                        if (authService.verify(password)) {
+                            session.setPassword(
+                                    Arrays.copyOf(password, password.length)
+                            );
+                            break;
+                        }
+                    }
+                }
+                vault.lock(session.getPassword());
                 session.clear();
+                menu.showFolderLocked();
                 return;
             }
 
             int attempts = 3;
+            menu.showPasswordHeader();
             while (attempts > 0) {
                 char[] password = menu.askPassword();
                 if (authService.verify(password)) {
@@ -123,6 +136,7 @@ public class Mirosync {
                     char[] p = session.getPassword();
                     vault.lock(p);
                     session.clear();
+                    menu.showFolderLocked();
                     return;
                 }
                 attempts--;
@@ -139,7 +153,7 @@ public class Mirosync {
     }
 
     private boolean isFirstRun() {
-        return !ConfigPaths.CONFIG_FILE.toFile().exists();
+        return !Files.exists(ConfigPaths.CONFIG_FILE);
     }
 
     private void clearTerminal() {
